@@ -214,12 +214,12 @@ if (isset($_SESSION["rol"])) {
             </div>
             <div class=" col-md-7 col-lg-8">
                 <h2 class="dc-mega">Solicitudes de registro</h2>
-                <div class="table container-fluid">
+                
                     <?php
 
                     $lista = obtenerPeticion();
 
-                    echo "<table>";
+                    echo "<table class='container-fluid  '>";
                     echo "<th>", "usuario", "</th>";
                     echo "<th>", "nick", "</th>";
                     
@@ -230,9 +230,9 @@ if (isset($_SESSION["rol"])) {
 
                     foreach ($lista as $fila) {
 
-                        echo "<tr>";
+                        echo "<tr class='mr-2 ml-2'>";
 
-                        echo "<td>";
+                        echo "<td class='mr-2 ml-2'>";
 
 
 
@@ -255,9 +255,9 @@ if (isset($_SESSION["rol"])) {
 
                         echo "<td>";
 
-                        echo "<button>";
+                        echo "<a href='delete.php?varId=".$fila["id"]."'>";
                         echo "validar";
-                        echo "</button>";
+                        echo "</a>";
                         echo "</td>";
 
                         echo "</tr>";

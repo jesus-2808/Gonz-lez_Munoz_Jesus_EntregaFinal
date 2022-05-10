@@ -103,11 +103,54 @@
         return $miArray;
         }
 
+        function eliminarPeticion($id){
+            global $servidor, $baseDatos, $usuario, $passw;
+            $retorno=false;
+            try {
+                $con = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
+                $sql = $con->prepare("DELETE from peticiones where id=:id");
+                $sql->bindParam(":id", $id);
+                $sql->execute();
+                if ($sql->rowCount() > 0) {
+                    $retorno = true;
+                }
+            } catch (\Throwable $th) {
+                $sql->execute();
+                if ($sql->rowCount() > 0) {
+                    $retorno = true;
+                }
+            }
+            $con = null;
+            return $retorno;
+        }
+
+        function insertarUsuarioRegistrado($nombre, $password, $rol, $mail, $validacionEmail, $notificacionEmail){
+            global $servidor, $baseDatos, $usuario, $passw;
+            try {
+                $con = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
+                $sql = $con->prepare("INSERT into usuarios values(null,:nombre,:password,:rol,:mail,:validacionEmail,:notificacionEmail)");
+                $sql->bindParam(":nombre", $nombre);
+                $sql->bindParam(":password", $password);
+                $sql->bindParam(":rol", $rol);
+                $sql->bindParam(":mail", $mail);
+                $sql->bindParam(":validacionEmail", $validacionEmail);
+                $sql->bindParam(":notificacionEmail", $notificacionEmail);
+                $sql->execute();
+                $id = $con->lastInsertId();
+            } catch (PDOException $e) {
+                echo $e;
+            }
+            $con = null;
+            return $id;
+        }
+     
+        
+
     /*
    ;
     
-        $contraseña= password_hash("12345", PASSWORD_DEFAULT);
-        updatePassword("javier_jimenez", $contraseña);
+       $contraseña= password_hash("12345", PASSWORD_DEFAULT);
+        updatePassword("ramon_299", $contraseña);
 
     */
 

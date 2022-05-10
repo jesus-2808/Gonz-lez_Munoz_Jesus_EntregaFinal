@@ -1,53 +1,21 @@
 <!DOCTYPE html>
 <?php
-ob_start();
-    include "databaseManager.inc.php";
 
+include "databaseManager.inc.php";
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-       
-        @session_start();
-        $nombre = $_POST["nombre"];
-        $correo = $_POST["email"];
-        $pass =  $_POST["passwd"];
-        $datosUsu = getUser($nombre);
-        var_dump($datosUsu["rol"]);
-        var_dump($datosUsu["password"]);
-        
+$id = $_GET["varId"];
+$cumplido = eliminarPeticion($id);
+$error = 'Se ha validado la petición con numero' . $id;
+if (!$cumplido) {
+    $error = "Error al validar la petición de ingreso al sistema";
+} else {
+    $error;
+}
 
-
-        if ($datosUsu != '') {  
-            if (password_verify($pass, $datosUsu["password"])) {
-
-                $_SESSION["rol"] = $datosUsu["rol"];
-                
-
-                $_SESSION["nombre"] = $datosUsu["nombre"];
-
-                if ($_SESSION["rol"] == "administrador" ) {
-                    echo "redireccion";
-                 header("Location: administracionView.php");
-                } else {
-                    header("Location: logadosView.php");
-                }
-            } else {
-                var_dump($pass);
-                echo "hay error";
-            }
-          
-            }
-        } else {
-            echo "el usuario o la contraseña no son correctos";
-        }
-ob_end_flush();
 ?>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,7 +24,7 @@ ob_end_flush();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"> </script>
-    
+
     <link rel='stylesheet' id='layerslider-css' href='https://iespoligonosur.org/www/wp-content/plugins/LayerSlider/static/layerslider/css/layerslider.css?ver=6.7.6' type='text/css' media='all' />
     <link rel='stylesheet' id='ls-google-fonts-css' href='https://fonts.googleapis.com/css?family=Lato:100,300,regular,700,900%7COpen+Sans:300%7CIndie+Flower:regular%7COswald:300,regular,700&#038;subset=latin%2Clatin-ext' type='text/css' media='all' />
     <link rel='stylesheet' id='wp-block-library-css' href='https://iespoligonosur.org/www/wp-includes/css/dist/block-library/style.min.css?ver=5.4.10' type='text/css' media='all' />
@@ -65,7 +33,6 @@ ob_end_flush();
     <style id='rs-plugin-settings-inline-css' type='text/css'>
 
     </style>
-    <link rel="stylesheet" href="css/table.css">
     <link rel='stylesheet' id='bookly-ladda.min.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/ladda.min.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.date.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.date.css?ver=20.6' type='text/css' media='all' />
@@ -80,6 +47,8 @@ ob_end_flush();
     <link rel='stylesheet' id='sf-main-css' href='https://iespoligonosur.org/www/wp-content/themes/dante-child/style.css' type='text/css' media='all' />
     <link rel='stylesheet' id='sf-responsive-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/responsive.css' type='text/css' media='all' />
     <script src="./js/sweetalert.min.js"></script>
+    <title>Portal de incidencias</title>
+
     <style>
         .row g-5 {
             margin-left: 2px;
@@ -111,10 +80,6 @@ ob_end_flush();
 </head>
 
 <body>
-
-
-
-
 
 
 
@@ -215,35 +180,13 @@ ob_end_flush();
                 </ul>
             </div>
             <div class=" col-md-7 col-lg-8">
-                <h2 class="dc-mega">Accede al sistema</h2>
+                <h2 class="dc-mega">Petición de registro validada</h2>
+                <h2><?php echo $error; ?></h2>
 
-                
-                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
-                    <div class="form-group ">
-                        <label for="userName">Nombre de usuario</label>
-                        <input type="text" class="form-control" name="nombre"  aria-describedby="emailHelp" placeholder="Introduce tu nick" required>
-
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Cuenta de correo del instituto</label>
-                        <input type="email" class="form-control" name="email"  aria-describedby="emailHelp" placeholder="Introduce tu correo" required>
-
-                    </div>
-
-                    <div class="form-group">
-                        <label for="validationMensaje"> Password:<span class="red">*</span></label>
-                        <p><input type="password" placeholder="Ingrese su contraseña" name="passwd" /></p>
-                    </div>
-                    <div class="form-group mb-10">
-                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
-                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
-                    </div>
-                    <br>
-                </form>
             </div>
         </div>
     </section>
-
+    <br>
 
     <section id="footer" class="footer-divider bg-secondary">
         <div class="container">
@@ -256,7 +199,6 @@ ob_end_flush();
                         </div>
                     </section>
                 </div>
-
 
 
                 <section class="fw-row asset-bg ">
@@ -283,3 +225,17 @@ ob_end_flush();
                 </section>
             </div>
     </section>
+    </div>
+
+
+    </div>
+    </div>
+
+    <!--// CLOSE #footer //-->
+    </section>
+
+
+
+</body>
+
+</html>
