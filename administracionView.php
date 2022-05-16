@@ -93,8 +93,8 @@ if (isset($_SESSION["rol"])) {
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
             margin-left: 2rem;
             background-color: white;
-             color: #ffffff;
-             text-align: left;
+            color: #ffffff;
+            text-align: left;
 
         }
 
@@ -166,6 +166,11 @@ if (isset($_SESSION["rol"])) {
             <div id="breadcrumbs">
 
                 <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
 
 
             </div>
@@ -214,63 +219,63 @@ if (isset($_SESSION["rol"])) {
             </div>
             <div class=" col-md-7 col-lg-8">
                 <h2 class="dc-mega">Solicitudes de registro</h2>
-                
-                    <?php
 
-                    $lista = obtenerPeticion();
+                <?php
 
-                    echo "<table class='container-fluid  '>";
-                    echo "<th>", "usuario", "</th>";
-                    echo "<th>", "nick", "</th>";
-                    
-                    echo "<th>", "mensaje", "</th>";
-                    echo "<th>", "validar", "</th>";
+                $lista = obtenerPeticiones();
 
+                echo "<table class='container-fluid  '>";
+                echo "<th>", "usuario", "</th>";
+                echo "<th>", "nick", "</th>";
 
-
-                    foreach ($lista as $fila) {
-
-                        echo "<tr class='mr-2 ml-2'>";
-
-                        echo "<td class='mr-2 ml-2'>";
+                echo "<th>", "mensaje", "</th>";
+                echo "<th>", "validar", "</th>";
 
 
 
-                        echo $fila['nombre'];
+                foreach ($lista as $fila) {
 
-                        echo "</td>";
+                    echo "<tr class='mr-2 ml-2'>";
 
-                        echo "<td>";
-
-                        echo $fila['email'];
-
-                        echo "</td>";
-
-                
-                        echo "<td>";
-
-                        echo $fila['mensaje'];
-
-                        echo "</td>";
-
-                        echo "<td>";
-
-                        echo "<a href='delete.php?varId=".$fila["id"]."'>";
-                        echo "validar";
-                        echo "</a>";
-                        echo "</td>";
-
-                        echo "</tr>";
-                    }
-                    echo "</table>";
-                    echo "<br>";
+                    echo "<td class='mr-2 ml-2'>";
 
 
 
-                    ?>
+                    echo $fila['nombre'];
 
-                </div>
+                    echo "</td>";
+
+                    echo "<td>";
+
+                    echo $fila['email'];
+
+                    echo "</td>";
+
+
+                    echo "<td>";
+
+                    echo $fila['mensaje'];
+
+                    echo "</td>";
+
+                    echo "<td>";
+
+                    echo "<a href='delete.php?varId=" . $fila["id"] . "'>";
+                    echo "validar";
+                    echo "</a>";
+                    echo "</td>";
+
+                    echo "</tr>";
+                }
+                echo "</table>";
+                echo "<br>";
+
+
+
+                ?>
+
             </div>
+        </div>
         </div>
     </section>
 

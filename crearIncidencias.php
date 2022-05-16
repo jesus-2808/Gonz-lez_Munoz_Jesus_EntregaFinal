@@ -1,17 +1,40 @@
 <!DOCTYPE html>
-
-<html lang="en">
 <?php
-
+ob_start();
 include "databaseManager.inc.php";
-session_start();
+
+@session_start();
+
+if (count($_POST) > 0) {
+    function seguro($valor)
+    {
+      $valor = strip_tags($valor);
+      $valor = stripslashes($valor);
+      $valor = htmlspecialchars($valor);
+      return $valor;
+    }
+   
+      $id =insertaIncidencia($_SESSION["id"], $_POST["titulo"], $_POST["aula"],date("Y-m-d") ,'', '', "nuevo");
+      if ($id != 0) {
+        echo "incidencia registrada";
+        exit();
+      } else {
+        $error = "error durante la carga";
+      }
+   
+  }
+
+
+
+
 ?>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administracion</title>
+    <title>Login</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +52,7 @@ session_start();
     <style id='rs-plugin-settings-inline-css' type='text/css'>
 
     </style>
-
+    <link rel="stylesheet" href="css/table.css">
     <link rel='stylesheet' id='bookly-ladda.min.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/ladda.min.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.date.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.date.css?ver=20.6' type='text/css' media='all' />
@@ -49,16 +72,6 @@ session_start();
             margin-left: 2px;
         }
 
-        .texto_bienvenida {
-            margin-left: 8px;
-            font-size: 20px;
-        }
-
-        .texto_2 {
-            margin-left: 8px;
-            font-size: 20px;
-
-        }
 
         h2 {
             font-family: sans-serif;
@@ -74,26 +87,6 @@ session_start();
             margin-left: 1rem;
         }
 
-        .dc-mega {
-            margin-left: 2rem;
-        }
-
-        .table {
-
-            margin-left: 2rem;
-            border-collapse: collapse;
-            text-align: center;
-            font-size: 2em;
-            font-family: sans-serif;
-            min-width: 300px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
-            margin-left: 2rem;
-            background-color: white;
-            color: #ffffff;
-            text-align: left;
-
-        }
-
         h1 {
             text-align: left;
         }
@@ -105,6 +98,9 @@ session_start();
 </head>
 
 <body>
+
+
+
 
 
 
@@ -163,20 +159,10 @@ session_start();
 
                 <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
 
-
-            </div>
-
-            <div id="breadcrumbs">
-
-                <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
-
-
             </div>
 
         </div>
         </div>
-        <br>
-        <br>
         <div class="row g-5">
             <div class="col-md-5 col-lg-4 order-md-last " id="frame">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -215,35 +201,48 @@ session_start();
 
                 </ul>
             </div>
-            <div class="col-md-7 col-lg-8">
-                <div class="texto_bienvenida">
-                    <?php
+            <div class=" col-md-6 col-lg-7">
+                <h2 class="dc-mega">Da de alta una incidencia</h2>
 
 
-                    if (isset($_SESSION["rol"])) {
-                        if ($_SESSION["rol"] == "usuarioRegistrado") {
-                            $nombre = $_SESSION["nombre"];
-                            $mail = $_SESSION["mail"];
-                            $rol = $_SESSION["rol"];
+                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+                    <div class="form-group ">
+                        <label for="titulo">Descripción de la incidencia</label>
+                        <input type="text" class="form-control" name="titulo" aria-describedby="titulo" placeholder="Descripción de la incidencia" required>
 
-                            echo "<p>Bienvenido $nombre</p>";
-                            echo "<ul class='texto_2'> TU PERFIL </ul>";
-                            echo "<li> nombre : $nombre </li>";
-                            echo "<li> mail : $mail </li>";
-                            echo "<li> rol de usuario : $rol </li>";
-                        } else {
+                    </div>
 
-                            header("Location: administracionView.php");
-                        }
-                    }
+                        <div class="form-group">
+                            <label for="aula">Identificador del aula</label>
+                            <select class="form-control" name="aula" id="exampleFormControlSelect1">
 
+                                <?php $lista = obtenerAula();
 
+                                foreach ($lista as $fila) {
 
+                                    echo '<option value="' . $fila["id_aula"] . '"';
 
-                    ?>
-                </div>
+                                    echo $fila["id_aula"];
+                                    echo "</option>";
+
+                                    echo "</br>";
+                                }
+
+                    
+                                ?>
+                            </select>
+                        </div>
+
+                    </div>
+
+                  
+                    <div class="form-group mb-10">
+                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
+                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
+                    </div>
+                    <br>
+                </form>
             </div>
-        </div>
         </div>
     </section>
 

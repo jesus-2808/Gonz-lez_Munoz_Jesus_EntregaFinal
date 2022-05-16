@@ -19,9 +19,8 @@ ob_start();
         if ($datosUsu != '') {  
             if (password_verify($pass, $datosUsu["password"])) {
 
+                $_SESSION["id"] = $datosUsu["id"];
                 $_SESSION["rol"] = $datosUsu["rol"];
-                
-
                 $_SESSION["nombre"] = $datosUsu["nombre"];
                 $_SESSION["mail"] = $datosUsu["mail"];
 

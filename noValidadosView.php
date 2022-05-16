@@ -100,9 +100,7 @@
             <a class="dropdown-item" href="#">Contacto</a>
           </div>
         </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" href="#">Disabled</a>
-        </li>
+
       </ul>
       <form class="form-inline my-2 my-lg-0">
 
@@ -180,14 +178,15 @@
             return $valor;
           }
           if (preg_match('/^[\w.+\-]+@iespoligonosur\.org$/', $_POST["email"])) {
-            $id = insertaPeticion(seguro($_POST["nick"]), $_POST["email"], $_POST["mensaje"]);
+            $contraseña= password_hash($_POST["passwd"], PASSWORD_DEFAULT);
+            $id = insertaPeticion(seguro($_POST["nick"]),$_POST["email"], $_POST["mensaje"],$contraseña);
             if ($id != 0) {
               echo "registrado con éxito. Espere que el administrador lo valide";
               exit();
             } else {
-             $error= "error durante la carga";
+              $error = "error durante la carga";
             }
-          } else{
+          } else {
             $error = "Inserte una dirección de correo válida";
           }
         }
@@ -196,20 +195,26 @@
         <form class="form-register" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST" enctype="multipart/form-data">
 
           <div class="form-group ">
-            <label for="userName">Nombre de usuario</label>
+            <label for="userName">Nombre de usuario</label><span class="red">*</span></label>
             <input type="text" class="form-control" name="nick" id="inputNick" aria-describedby="emailHelp" placeholder="Introduce tu nick" required>
 
           </div>
           <div class="form-group">
-            <label for="exampleInputEmail1">Cuenta de correo del instituto</label>
+            <label for="exampleInputEmail1">Cuenta de correo del instituto</label><span class="red">*</span></label>
             <input type="email" class="form-control" name="email" id="inputEmail" aria-describedby="emailHelp" placeholder="Introduce tu correo" required>
 
+          </div>
+
+          <div class="form-group">
+            <label for="validationMensaje"> Password:<span class="red">*</span></label>
+            <p><input type="password" placeholder="Ingrese su contraseña" name="passwd" /></p>
           </div>
 
           <div class="form-group">
             <label for="validationMensaje">Mensaje:<span class="red">*</span></label>
             <textarea class="form-control" id="validationMensaje" name="mensaje" rows="2" min="20" required=""></textarea>
           </div>
+
           <div class="form-group mb-10">
             <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
             <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
