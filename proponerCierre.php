@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-
-<html lang="en">
 <?php
 
 include "databaseManager.inc.php";
-session_start();
+
+$id = $_GET["varId"];
+
+$error = 'Se ha solicitado el cierre de la incidencia ' . $id;
+solicitudCierre(1, $id);
+   
+
+
 ?>
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administracion</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +31,6 @@ session_start();
     <style id='rs-plugin-settings-inline-css' type='text/css'>
 
     </style>
-
     <link rel='stylesheet' id='bookly-ladda.min.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/ladda.min.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.date.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.date.css?ver=20.6' type='text/css' media='all' />
@@ -44,21 +45,13 @@ session_start();
     <link rel='stylesheet' id='sf-main-css' href='https://iespoligonosur.org/www/wp-content/themes/dante-child/style.css' type='text/css' media='all' />
     <link rel='stylesheet' id='sf-responsive-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/responsive.css' type='text/css' media='all' />
     <script src="./js/sweetalert.min.js"></script>
+    <title>Portal de incidencias</title>
+
     <style>
         .row g-5 {
             margin-left: 2px;
         }
 
-        .texto_bienvenida {
-            margin-left: 8px;
-            font-size: 20px;
-        }
-
-        .texto_2 {
-            margin-left: 8px;
-            font-size: 20px;
-
-        }
 
         h2 {
             font-family: sans-serif;
@@ -74,26 +67,6 @@ session_start();
             margin-left: 1rem;
         }
 
-        .dc-mega {
-            margin-left: 2rem;
-        }
-
-        .table {
-
-            margin-left: 2rem;
-            border-collapse: collapse;
-            text-align: center;
-            font-size: 2em;
-            font-family: sans-serif;
-            min-width: 300px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
-            margin-left: 2rem;
-            background-color: white;
-            color: #ffffff;
-            text-align: left;
-
-        }
-
         h1 {
             text-align: left;
         }
@@ -105,7 +78,6 @@ session_start();
 </head>
 
 <body>
-
 
 
 
@@ -159,19 +131,14 @@ session_start();
 
             </div>
 
-
-
             <div id="breadcrumbs">
 
-                <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
-
+                <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
 
             </div>
 
         </div>
         </div>
-        <br>
-        <br>
         <div class="row g-5">
             <div class="col-md-5 col-lg-4 order-md-last " id="frame">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -210,199 +177,14 @@ session_start();
 
                 </ul>
             </div>
-            <div class="col-md-7 col-lg-8">
-                <div class="texto_bienvenida">
-                    <?php
+            <div class=" col-md-7 col-lg-8">
+                <h2 class="dc-mega">Cierre de incidencia propuesto</h2>
+                <h2><?php echo $error; ?></h2>
 
-
-                    if (isset($_SESSION["rol"])) {
-                        if ($_SESSION["rol"] == "usuarioRegistrado") {
-                            $nombre = $_SESSION["nombre"];
-                            $mail = $_SESSION["mail"];
-                            $rol = $_SESSION["rol"];
-                            $id_user = $_SESSION["id"];
-
-                            echo "<p>Bienvenido $nombre</p>";
-                            echo "<ul class='texto_2'> TU PERFIL </ul>";
-                            echo "<li> nombre : $nombre </li>";
-                            echo "<li> mail : $mail </li>";
-                            echo "<li> rol de usuario : $rol </li>";
-                            if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                                $fecha_creacion=$_POST["fecha"];
-                                $lista;
-
-                                if (!empty($fecha_creacion)) {
-                                    echo "<h3>TUS INCIDENCIAS</h3>";
-                                    $lista=obtenerIncidenciaxFecha($fecha_creacion, $id_user);
-                                    echo "<table class='container-fluid '>";
-                                    echo "<th>", "Descripción", "</th>";
-                                    echo "<th>", "Aula", "</th>";
-        
-                                    echo "<th>", "Fecha de creación", "</th>";
-                                    echo "<th>", "Estado", "</th>";
-                                    echo "<th>", "Comentario", "</th>";
-                                    echo "<th>", "Comentario", "</th>";
-
-                                    
-                            foreach ($lista as $fila) {
-
-                                echo "<tr class='mr-2 ml-2'>";
-
-                                echo "<td class='mr-2 ml-2'>";
-
-
-
-                                echo $fila['titulo'];
-
-                                echo "</td>";
-
-                                echo "<td>";
-
-                                echo obtenerAula($fila['id_aula'])[0];
-
-                                echo "</td>";
-
-
-                                echo "<td>";
-
-                                echo $fila['fecha_creacion'];
-
-                                echo "</td>";
-
-                                echo "<td>";
-
-                                echo  $fila['estado'];
-
-                                echo "</td>";
-                                echo "<td>";
-                                echo "<a href='insertaComentario.php?sndVarId=" . $fila["id"] . "'>";
-                                echo "Insertar";
-                                echo "</a>";
-                                echo "</td>";
-                                echo "<td>";
-                                echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
-                                echo "Modificar";
-                                echo "</a>";
-                                echo "</td>";
-                                echo "</tr>";
-                            }
-                            echo "</table>";
-                            echo "<br>";
-        
-        
-                                } else {
-                                
-                                
-                                }
-                            } else{
-                                $lista = obtenerIncidenciaxUsuario($id_user);
-                                echo "<h3>TUS INCIDENCIAS</h3>";
-                                echo "<table class='container-fluid '>";
-                                echo "<th>", "Descripción", "</th>";
-                                echo "<th>", "Aula", "</th>";
-    
-                                echo "<th>", "Fecha de creación", "</th>";
-                                echo "<th>", "Estado", "</th>";
-                                echo "<th>", "Comentario", "</th>";
-                                echo "<th>", "Comentario", "</th>";
-                                echo "<th>", "Cerrar", "</th>";
-    
-    
-                                foreach ($lista as $fila) {
-    
-                                    echo "<tr class='mr-2 ml-2'>";
-    
-                                    echo "<td class='mr-2 ml-2'>";
-    
-    
-    
-                                    echo $fila['titulo'];
-    
-                                    echo "</td>";
-    
-                                    echo "<td>";
-    
-                                    echo obtenerAula($fila['id_aula'])[0];
-    
-                                    echo "</td>";
-    
-    
-                                    echo "<td>";
-    
-                                    echo $fila['fecha_creacion'];
-    
-                                    echo "</td>";
-    
-                                    echo "<td>";
-    
-                                    echo  $fila['estado'];
-    
-                                    echo "</td>";
-                                    echo "<td>";
-                                    echo "<a href='insertaComentario.php?sndVarId=" . $fila["id"] . "'>";
-                                    echo "Insertar";
-                                    echo "</a>";
-                                    echo "</td>";
-                                    echo "<td>";
-                                    echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
-                                    echo "Modificar";
-                                    echo "</a>";
-                                    echo "</td>";
-                                    echo "<td>";
-                                    echo "<a href='proponerCierre.php?varId=" . $fila["id"] . "'>";
-                                    echo "Proponer";
-                                    echo "</a>";
-                                    echo "</td>";
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-                                echo "<br>";
-                            }
-                          
-                        } else {
-
-                            header("Location: administracionView.php");
-                        }
-                    }
-
-
-
-
-                    ?>
-                    <form class="form-register" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" enctype="multipart/form-data" method="POST">
-                        <fieldset>
-                            <legend>Filtros incidencias</legend>
-                            fecha de creacion:
-                            <select name="fecha">
-
-
-
-                                <?php $lista = obtenerFecha($_SESSION["id"]);
-
-                                foreach ($lista as $fila) {
-
-                                    echo '<option value="' . $fila["fecha_creacion"] . '"';
-
-                                    echo $fila["fecha_creacion"];
-                                    echo "</option>";
-
-                                    echo "</br>";
-                                }
-                                ?>
-
-                            </select>
-                            <br>
-                           
-                            <br>
-                            <button type="submit">Filtrar</button>
-                        </fieldset>
-                    </form>
-                </div>
             </div>
         </div>
-        </div>
     </section>
-
+    <br>
 
     <section id="footer" class="footer-divider bg-secondary">
         <div class="container">
@@ -415,7 +197,6 @@ session_start();
                         </div>
                     </section>
                 </div>
-
 
 
                 <section class="fw-row asset-bg ">
@@ -442,3 +223,17 @@ session_start();
                 </section>
             </div>
     </section>
+    </div>
+
+
+    </div>
+    </div>
+
+    <!--// CLOSE #footer //-->
+    </section>
+
+
+
+</body>
+
+</html>

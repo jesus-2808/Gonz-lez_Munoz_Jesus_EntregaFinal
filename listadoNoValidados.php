@@ -101,50 +101,14 @@
 
       <a title="Ver página instituto" href="https://iespoligonosur.org" class="home">Página principal</a>
     
-      <a title="Administrar Usuarios" href="administrarUsuarios.php" class="home">Administrar Usuarios</a>
-
-      <a title="Administrar Usuarios" href="administracionView.php" class="home">Validar Usuarios</a>
+  
      
-    </div>
+    
 
   </div>
 
 
-  <div class="row g-5 ml-2">
-  <table class="styled-table col-xs-11 ml-2" border="1">
-    <h2>Incidencias para cerrar</h2>
-      <thead>
-        <tr>
-         
-          <th>n_usuario</th>
-          <th>título</th>
-          <th>aula</th>
-          <th>fecha_creacion</th>
-            <th>estado</th>
-            <th>cerrar</th>
-            
-        </tr>
-      </thead>
-      <tbody>
-        <?php
-        $incPdte = obtenerIncidenciaPdteCierre();
-        $mensaje="cerrar";
-        
-        
-        for ($i = 0; $i < count($incPdte); $i++) {
-          echo "<tr><td>" . $incPdte[$i]["id_usuario"] . "</td> <td> <a href='detalleIncidencia.php?varId=".$incPdte[$i]["id"]."'>" . $incPdte[$i]["titulo"] . "</a></td><td>" . obtenerAula($incPdte[$i]["id_aula"])[0] . "</td><td>" . $incPdte[$i]["fecha_creacion"] . "</td>
-            <td>" . $incPdte[$i]["estado"] . "</td>  <td> <a href='cerrarIncidencia.php?variableId=".$incPdte[$i]["id"]."'>" . $mensaje. "</a></td>  </tr>";
- 
-            
-        }
-        ?>
-      </tbody>
-    </table>
-   
-
-      </h4>
   
-    </div>
     <div class="row g-5 ml-2" >
     
     <table class="styled-table col-xs-11 ml-2" border="1">
@@ -152,15 +116,14 @@
       <thead>
         <tr>
          
-          <th>n_usuario</th>
+         
           <th>título</th>
           <th>aula</th>
           <th>fecha_creacion</th>
           <th>fecha_modificacion</th>
           <th>fecha_cierre</th>
             <th>estado</th>
-            <th>modificar</th>
-            <th>comentario</th>
+           
            
         </tr>
       </thead>
@@ -172,8 +135,8 @@
         for ($i = 0; $i < count($datos); $i++) {
           $texto="modificar";
           $msj="insertar";
-          echo "<tr><td>" . $datos[$i]["id_usuario"] . "</td> <td> <a href='detalleIncidencia.php?varId=".$datos[$i]["id"]."'>" . $datos[$i]["titulo"] . "</a></td><td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
-          <td>" . $datos[$i]["fecha_modificacion"] . "</td> <td>" . $datos[$i]["fecha_cierre"] . "</td>    <td>" . $datos[$i]["estado"] . "</td>  <td> <a href='modificarIncidencia.php?variableId=".$datos[$i]["id"]."'>" . $texto. "</a></td>  <td> <a href='insertaComentarioAdmin.php?sndVarId=".$datos[$i]["id"]."'>" . $msj. "</a></td> </tr>";
+          echo "<tr><td>" . $datos[$i]["titulo"] . "</td> <td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
+          <td>" . $datos[$i]["fecha_modificacion"] . "</td> <td>" . $datos[$i]["fecha_cierre"] . "</td>    <td>" . $datos[$i]["estado"] . "</td>  </tr>";
  
             
         }

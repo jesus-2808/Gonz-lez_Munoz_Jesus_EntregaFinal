@@ -6,7 +6,7 @@ include "databaseManager.inc.php";
 $id = $_GET["varId"];
 $nuevoUser=obtenerPeticion($id);
 $cumplido = eliminarPeticion($id);
-$error = 'Se ha validado la petición con numero' . $id;
+$error = 'Se ha validado la petición con numero ' . $id;
 if (!$cumplido) {
     $error = "Error al validar la petición de ingreso al sistema";
 } else {

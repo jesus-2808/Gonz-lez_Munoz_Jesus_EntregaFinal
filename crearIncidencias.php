@@ -14,9 +14,10 @@ if (count($_POST) > 0) {
       return $valor;
     }
    
-      $id =insertaIncidencia($_SESSION["id"], $_POST["titulo"], $_POST["aula"],date("Y-m-d") ,'', '', "nuevo");
+      $id =insertaIncidencia($_SESSION["id"], $_POST["titulo"], $_POST["aula"],date("Y-m-d") ,'', '', "nuevo", '');
       if ($id != 0) {
-        echo "incidencia registrada";
+        
+        header("Location: logadosView.php");
         exit();
       } else {
         $error = "error durante la carga";
@@ -216,7 +217,7 @@ if (count($_POST) > 0) {
                             <label for="aula">Identificador del aula</label>
                             <select class="form-control" name="aula" id="exampleFormControlSelect1">
 
-                                <?php $lista = obtenerAula();
+                                <?php $lista = obtenerAulas();
 
                                 foreach ($lista as $fila) {
 

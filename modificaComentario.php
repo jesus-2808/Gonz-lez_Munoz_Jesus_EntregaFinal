@@ -1,6 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<?php
+
+include "databaseManager.inc.php";
+
+
+@session_start();
+
+if (count($_GET) > 0) {
+  $id_inc = $_GET["varId"];
+ $comentario=obtenerComentarioxIncidencia($id_inc);
+} else {
+  $id_inc = $_POST["id_inc"];
+ 
+  $comentario = obtenerComentarioxIncidencia($id_inc);
+}
+$error = '';
+if (count($_POST) > 0) {
+  function seguro($valor)
+  {
+      $valor = strip_tags($valor);
+      $valor = stripslashes($valor);
+      $valor = htmlspecialchars($valor);
+      return $valor;
+  }
+
+
+  $cumplido = editarComentario($_POST["id"],  $_POST["mensaje"], $_POST["id_inc"], date("Y-m-d"), $_SESSION["id"]);
+ 
+  if ($cumplido == true) {
+      header("logadosView.php");
+      
+  } else {
+      $error = "Datos incorrectos o no se ha actualizado nada";
+  }
+}
+
+
+
+
+
+
+?>
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -119,7 +162,7 @@
 
       <div id="breadcrumbs">
 
-        <a title="ver listado incidencias." href="listadoNoValidados.php" class="home">Listado de incidencias</a>
+        <a title="ver listado incidencias." href="logadosView.php" class="home">Volver a tu perfil</a>
 
       </div>
 
@@ -164,107 +207,69 @@
         </ul>
       </div>
       <div class=" col-md-7 col-lg-8">
-        <h2 class="dc-mega">Solicita tu registro para reportar incidencias</h2>
-        <?php
-        include "databaseManager.inc.php";
 
-        $error = "";
-        if (count($_POST) > 0) {
-          function seguro($valor)
-          {
-            $valor = strip_tags($valor);
-            $valor = stripslashes($valor);
-            $valor = htmlspecialchars($valor);
-            return $valor;
-          }
-          if (preg_match('/^[\w.+\-]+@iespoligonosur\.org$/', $_POST["email"])) {
-            $contraseña= password_hash($_POST["passwd"], PASSWORD_DEFAULT);
-            $id = insertaPeticion(seguro($_POST["nick"]),$_POST["email"], $_POST["mensaje"],$contraseña);
-            if ($id != 0) {
-              echo "registrado con éxito. Espere que el administrador lo valide";
-              exit();
-            } else {
-              $error = "error durante la carga";
-            }
-          } else {
-            $error = "Inserte una dirección de correo válida";
-          }
-        }
+        <h2 class="dc-mega">Modifica los comentarios de la incidencia <?php echo $id_inc ?> </h2>
+    <?php
+       echo "<h3>TUS COMENTARIOS</h3>";
+       $lista = obtenerComentarioxIncidencia($id_inc);
 
+       echo "<table class='container-fluid '>";
+       echo "<th>", "contenido", "</th>";
+       echo "<th>", "nº incidencia", "</th>";
+       echo "<th>", "Fecha de creación", "</th>";
+
+       
+       foreach ($lista as $fila) {
+            
+        echo "<tr class='mr-2 ml-2'>";
+
+        echo "<td class='mr-2 ml-2'>";
+
+        
+
+        echo $fila['contenido'];
+
+        echo "</td>";
+
+        echo "<td>";
+
+        echo $fila['id_incidencia'];
+
+        echo "</td>";
+
+
+        echo "<td>";
+
+        echo $fila['fecha_modificacion'];
+
+        echo "</td>";
+      echo "</tr>";
+        echo "</table>";
         ?>
-        <form class="form-register" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST" enctype="multipart/form-data">
-
-          <div class="form-group ">
-            <label for="userName">Nombre de usuario</label><span class="red">*</span></label>
-            <input type="text" class="form-control" name="nick" id="inputNick" aria-describedby="emailHelp" placeholder="Introduce tu nick" required>
-
-          </div>
+        <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+        <input type="hidden" name="id" value="<?php echo $fila["id"]; ?>">
+        <input type="hidden" name="id_inc" value="<?php echo $id_inc; ?>">
           <div class="form-group">
-            <label for="exampleInputEmail1">Cuenta de correo del instituto</label><span class="red">*</span></label>
-            <input type="email" class="form-control" name="email" id="inputEmail" aria-describedby="emailHelp" placeholder="Introduce tu correo" required>
-
+            <label for="validationMensaje">Inserta comentario:<span class="red">*</span></label>
+            <textarea class="form-control" id="mensaje" name="mensaje" value="<?php echo $comentario["contenido"]; ?>" rows="2" min="20"></textarea>
           </div>
-
-          <div class="form-group">
-            <label for="validationMensaje"> Password:<span class="red">*</span></label>
-            <p><input type="password" placeholder="Ingrese su contraseña" name="passwd" /></p>
-          </div>
-
-          <div class="form-group">
-            <label for="validationMensaje">Mensaje:<span class="red">*</span></label>
-            <textarea class="form-control" id="validationMensaje" name="mensaje" rows="2" min="20" required=""></textarea>
-          </div>
-
           <div class="form-group mb-10">
             <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
-            <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
           </div>
-          <br>
         </form>
+       <?php
+       echo "</br>";
+       }  
 
+    ?>
+     
       </div>
-    </div>
+
+
   </section>
   <br>
 
-  <section id="footer" class="footer-divider bg-secondary">
-    <div class="container">
-      <div id="footer-widgets" class="row clearfix">
-
-        <div class="col-sm-6">
-          <section id="text-5" class="widget widget_text clearfix">
-            <div class="textwidget">
-              <p><img class="alignnone wp-image-5415 size-full" src="https://iespoligonosur.org/www/wp-content/uploads/2021/06/sellosweb.png" alt="" width="1024" height="125"></p>
-            </div>
-          </section>
-        </div>
-
-
-
-        <section class="fw-row asset-bg ">
-          <div class="container-fluid">
-            <div class="row-fluid">
-              <div class="spb_gmaps_widget spb_content_element 150px">
-                <div class="spb_wrapper">
-                  <div class="spb_map_wrapper">
-                    <div class="map-canvas" style="width:100%;height:100px;" data-address="Esclava del señor 2 41013 sevilla" data-zoom="14" data-maptype="roadmap" data-mapcolor="" data-mapsaturation="mono" data-pinimage="" data-pinlink=""></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section class="container">
-          <div class="row">
-            <div class="spb_content_element col-sm-12 spb_text_column">
-              <div class="spb_wrapper clearfix">
-
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-  </section>
+  
   </div>
 
 

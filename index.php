@@ -11,8 +11,7 @@ ob_start();
         $correo = $_POST["email"];
         $pass =  $_POST["passwd"];
         $datosUsu = getUser($nombre);
-        var_dump($datosUsu["rol"]);
-        var_dump($datosUsu["password"]);
+       
         
 
 
@@ -36,9 +35,10 @@ ob_start();
             }
           
             }
-        } else {
+            else {
             echo "el usuario o la contraseña no son correctos";
         }
+    }
 ob_end_flush();
 ?>
 <html lang="en">
