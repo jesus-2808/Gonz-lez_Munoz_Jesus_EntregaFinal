@@ -1,14 +1,74 @@
 <!DOCTYPE html>
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+
 include "databaseManager.inc.php";
 
+function envioMensaje($remitente, $destinatario, $asunto)
+{
+    require 'PHPMailer-master\src\PHPMailer.php';
+    require 'PHPMailer-master\src\SMTP.php';
+    require 'PHPMailer-master\src\Exception.php';
+
+    $mail = new PHPMailer();
+
+    $body = "incidencia cerrada";
+
+    $mail->IsSMTP();
+    $mail->Host = "smtp.gmail.com";
+    $mail->SMTPSecure = 'tls';
+    $mail->SMTPAuth = true;
+    $mail->Port = 587;
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+
+    $mail->From = $remitente;
+    $mail->FromName = 'jesus.gonzalez.munoz.al@iespoligonosur.org';
+    $mail->Username   = $remitente;
+    $mail->Password   = '7BC8an55';
+    $mail->SetFrom($remitente);
+    $mail->AddReplyTo($destinatario);
+    $mail->Subject    =  $asunto;
+
+
+    $mail->MsgHTML($body);
+    $mail->IsHTML(true);
+
+
+    $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
+    if (!$mail->Send()) {
+        echo "Mailer Error: " . $mail->ErrorInfo;
+    } else {
+        echo "Message has been sent";
+    }
+}
+
 $id = $_GET["variableId"];
-$incidencia=obtenerIncidencia($id);
+$incidencia = obtenerIncidencia($id);
 
-$mensaje = 'Se ha cerrado la incidencia ' . $id;
 
-cambiarEstado(date("Y-m-d"), "resuelto", $incidencia["id"]);
+
+$cumplido = cambiarEstado(date("Y-m-d"), "resuelto", $incidencia["id"]);
+
+if ($cumplido == true) {
+    $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+    foreach ($user as $fila) {
+        if ($fila['notificacionEmail'] == 1) {
+            envioMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Cerrada la incidencia: " . $id . " con fecha " . date("Y-m-d"));
+        } else {
+            echo '<script language="javascript">swal("El creador de la incidencia no desea recibir notificaciones por correo");</script>';
+        }
+        $mensaje="se ha cerrado la incidencia";
+    }
+} else {
+    $error = "Datos incorrectos o no se ha actualizado nada";
+}
 
 
 
@@ -132,10 +192,22 @@ cambiarEstado(date("Y-m-d"), "resuelto", $incidencia["id"]);
                 <h1>Portal de incidencias</h1>
 
             </div>
-
             <div id="breadcrumbs">
 
                 <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
+
+
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
+
 
             </div>
 

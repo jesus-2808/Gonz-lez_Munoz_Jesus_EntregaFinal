@@ -4,15 +4,14 @@
 include "databaseManager.inc.php";
 
 $id = $_GET["varId"];
-$nuevoUser=obtenerPeticion($id);
+$nuevoUser = obtenerPeticion($id);
 $cumplido = eliminarPeticion($id);
 $error = 'Se ha validado la petición con numero ' . $id;
 if (!$cumplido) {
     $error = "Error al validar la petición de ingreso al sistema";
 } else {
-    
+
     insertarUsuarioRegistrado($nuevoUser['nombre'], $nuevoUser['password'], 'usuarioRegistrado', $nuevoUser['email'], 1, 1);
-   
 }
 
 ?>
@@ -138,7 +137,30 @@ if (!$cumplido) {
 
             <div id="breadcrumbs">
 
+
+                <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
+            </div>
+            <div id="breadcrumbs">
+
                 <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
+
+
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
 
             </div>
 

@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $cumplido=insertaComentario($comentario, $id_2, date("Y-m-d"), $_SESSION["id"]);
   if($cumplido==true){
     $user=obtenerUsuarioxId($id); 
-    $destinatario=$user["mail"];;
+    $destinatario=$user["mail"];
     $asunto=$_POST["titulo"];
     $message="cambio en el estado de la incidencia";
     mail($destinatario, $asunto, $message );

@@ -6,9 +6,6 @@ session_start();
 if (isset($_SESSION["rol"])) {
     if ($_SESSION["rol"] == "administrador") {
         $nombre = $_SESSION["nombre"];
-
-
-        echo "Bienvenido $nombre";
     } else {
 
         header("Location: logadosView.php");
@@ -162,7 +159,11 @@ if (isset($_SESSION["rol"])) {
                 <h1>Portal de incidencias</h1>
 
             </div>
+            <div id="breadcrumbs">
 
+
+                <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
+            </div>
             <div id="breadcrumbs">
 
                 <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
@@ -170,15 +171,20 @@ if (isset($_SESSION["rol"])) {
 
             <div id="breadcrumbs">
 
-                <a title="validar usuarios." href="administracionView.php" class="home">validar usuarios</a>
+                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
 
 
             </div>
 
             <div id="breadcrumbs">
 
-        <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
-
+                <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
 
             </div>
 
@@ -267,7 +273,7 @@ if (isset($_SESSION["rol"])) {
 
                     echo "<td>";
 
-                    echo "<a href='delete.php?varId=" . $fila["id"] . "'>";
+                    echo "<a href='validarUsuario.php?varId=" . $fila["id"] . "'>";
                     echo "validar";
                     echo "</a>";
                     echo "</td>";

@@ -159,13 +159,16 @@ session_start();
 
             </div>
 
-
+            <div id="breadcrumbs">
+                <a title="cerrar sesion." href="cerrarSesion.php" class="home">Cerrar sesion</a>
+            </div>
 
             <div id="breadcrumbs">
 
                 <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
-
-
+            </div>
+            <div id="breadcrumbs">
+                <a title="Tu perfil." href="logadosView.php" class="home">Tu perfil</a>
             </div>
 
         </div>
@@ -223,142 +226,363 @@ session_start();
                             $id_user = $_SESSION["id"];
 
                             echo "<p>Bienvenido $nombre</p>";
+                    ?>
+
+                            <p><a href="seleccionaNotificaciones.php">Pincha aquí para configurar tus preferencias de notificaciones</a></p>
+
+                    <?php
                             echo "<ul class='texto_2'> TU PERFIL </ul>";
                             echo "<li> nombre : $nombre </li>";
                             echo "<li> mail : $mail </li>";
                             echo "<li> rol de usuario : $rol </li>";
                             if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                                $fecha_creacion=$_POST["fecha"];
+                                $estado = $_POST["estado"];
+                                $aulas= $_POST["aula"];
                                 $lista;
 
-                                if (!empty($fecha_creacion)) {
+                                if (!empty($estado) && empty($aulas)) {
                                     echo "<h3>TUS INCIDENCIAS</h3>";
-                                    $lista=obtenerIncidenciaxFecha($fecha_creacion, $id_user);
+                                    $lista = obtenerIncidenciaxEstado($estado, $id_user);
+                                    if ($estado != "resuelto") {
+                                        echo "<table class='container-fluid '>";
+                                        echo "<th>", "Descripción", "</th>";
+                                        echo "<th>", "Aula", "</th>";
+
+                                        echo "<th>", "Fecha de creación", "</th>";
+                                        echo "<th>", "Estado", "</th>";
+                                        echo "<th>", "Comentario", "</th>";
+                                        echo "<th>", "Comentario", "</th>";
+                                    } else {
+                                        echo "<table class='container-fluid '>";
+                                        echo "<th>", "Descripción", "</th>";
+                                        echo "<th>", "Aula", "</th>";
+
+                                        echo "<th>", "Fecha de creación", "</th>";
+                                        echo "<th>", "Estado", "</th>";
+                                    }
+
+
+
+                                    foreach ($lista as $fila) {
+
+                                        echo "<tr class='mr-2 ml-2'>";
+
+                                        echo "<td class='mr-2 ml-2'>";
+
+
+
+                                        echo $fila['titulo'];
+
+                                        echo "</td>";
+
+                                        echo "<td>";
+
+                                        echo obtenerAula($fila['id_aula'])[0];
+
+                                        echo "</td>";
+
+
+                                        echo "<td>";
+
+                                        echo $fila['fecha_creacion'];
+
+                                        echo "</td>";
+
+                                        echo "<td>";
+
+                                        echo  $fila['estado'];
+
+                                        echo "</td>";
+                                        if ($fila['estado'] != "resuelto") {
+                                            echo "<td>";
+                                            echo "<a href='insertaComentario.php?sndVarId=" . $fila["id"] . "'>";
+                                            echo "Insertar";
+                                            echo "</a>";
+                                            echo "</td>";
+                                            echo "<td>";
+                                            echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
+                                            echo "Modificar";
+                                            echo "</a>";
+                                            echo "</td>";
+                                        } else {
+
+                                            echo "</tr>";
+                                        }
+
+                                        echo "</tr>";
+                                    }
+                                    echo "</table>";
+                                    echo "<br>";
+                                } else if (empty($estado) && !empty($aulas)) {
+                                    $lista=obtenerIncidenciasxAula($aulas, $id_user);
+                                    echo "<h3>TUS INCIDENCIAS</h3>";
                                     echo "<table class='container-fluid '>";
                                     echo "<th>", "Descripción", "</th>";
                                     echo "<th>", "Aula", "</th>";
-        
+    
                                     echo "<th>", "Fecha de creación", "</th>";
                                     echo "<th>", "Estado", "</th>";
                                     echo "<th>", "Comentario", "</th>";
                                     echo "<th>", "Comentario", "</th>";
-
+                                    echo "<th>", "Cerrar", "</th>";
+    
+    
+                                    foreach ($lista as $fila) {
+    
+                                        echo "<tr class='mr-2 ml-2'>";
+    
+                                        echo "<td class='mr-2 ml-2'>";
+    
+    
+    
+                                        echo $fila['titulo'];
+    
+                                        echo "</td>";
+    
+                                        echo "<td>";
+    
+                                        echo obtenerAula($fila['id_aula'])[0];
+    
+                                        echo "</td>";
+    
+    
+                                        echo "<td>";
+    
+                                        echo $fila['fecha_creacion'];
+    
+                                        echo "</td>";
+    
+                                        echo "<td>";
+    
+                                        echo  $fila['estado'];
+    
+                                        echo "</td>";
+    
+                                        if ($fila['estado'] != "resuelto") {
+                                            echo "<td>";
+                                            echo "<a href='insertaComentario.php?sndVarId=" . $fila["id"] . "'>";
+                                            echo "Insertar";
+                                            echo "</a>";
+                                            echo "</td>";
+                                            echo "<td>";
+                                            echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
+                                            echo "Modificar";
+                                            echo "</a>";
+                                            echo "</td>";
+                                            echo "<td>";
+                                            echo "<a href='proponerCierre.php?varId=" . $fila["id"] . "'>";
+                                            echo "Proponer";
+                                            echo "</a>";
+                                            echo "</td>";
+                                        } else {
+    
+                                            echo "<td>";
+    
+                                            echo "terminado";
+    
+                                            echo "</td>";
+    
+                                            echo "<td>";
+    
+                                            echo  "terminado";
+    
+                                            echo "</td>";
+    
+                                            echo "<td>";
+    
+                                            echo  "cerrada";
+    
+                                            echo "</td>";
+    
+                                            echo "</tr>";
+                                        }
+    
+    
+                                        echo "</tr>";
+                                    }
+                                    echo "</table>";
                                     
-                            foreach ($lista as $fila) {
 
-                                echo "<tr class='mr-2 ml-2'>";
+                                } else if(!empty($estado) && !empty($aulas)){
+                                    $lista=obtenerIncidenciaXEstadoYAula($estado, $id_user, $aulas);
+                                    echo "<h3>TUS INCIDENCIAS</h3>";
+                                    echo "<table class='container-fluid '>";
+                                    echo "<th>", "Descripción", "</th>";
+                                    echo "<th>", "Aula", "</th>";
+    
+                                    echo "<th>", "Fecha de creación", "</th>";
+                                    echo "<th>", "Estado", "</th>";
+                                    echo "<th>", "Comentario", "</th>";
+                                    echo "<th>", "Comentario", "</th>";
+                                    echo "<th>", "Cerrar", "</th>";
+    
+    
+                                    foreach ($lista as $fila) {
+    
+                                        echo "<tr class='mr-2 ml-2'>";
+    
+                                        echo "<td class='mr-2 ml-2'>";
+    
+    
+    
+                                        echo $fila['titulo'];
+    
+                                        echo "</td>";
+    
+                                        echo "<td>";
+    
+                                        echo obtenerAula($fila['id_aula'])[0];
+    
+                                        echo "</td>";
+    
+    
+                                        echo "<td>";
+    
+                                        echo $fila['fecha_creacion'];
+    
+                                        echo "</td>";
+    
+                                        echo "<td>";
+    
+                                        echo  $fila['estado'];
+    
+                                        echo "</td>";
+    
+                                        if ($fila['estado'] != "resuelto") {
+                                            echo "<td>";
+                                            echo "<a href='insertaComentario.php?sndVarId=" . $fila["id"] . "'>";
+                                            echo "Insertar";
+                                            echo "</a>";
+                                            echo "</td>";
+                                            echo "<td>";
+                                            echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
+                                            echo "Modificar";
+                                            echo "</a>";
+                                            echo "</td>";
+                                            echo "<td>";
+                                            echo "<a href='proponerCierre.php?varId=" . $fila["id"] . "'>";
+                                            echo "Proponer";
+                                            echo "</a>";
+                                            echo "</td>";
+                                        } else {
+    
+                                            echo "<td>";
+    
+                                            echo "terminado";
+    
+                                            echo "</td>";
+    
+                                            echo "<td>";
+    
+                                            echo  "terminado";
+    
+                                            echo "</td>";
+    
+                                            echo "<td>";
+    
+                                            echo  "cerrada";
+    
+                                            echo "</td>";
+    
+                                            echo "</tr>";
+                                        }
+    
+    
+                                        echo "</tr>";
+                                    }
+                                    echo "</table>";
 
-                                echo "<td class='mr-2 ml-2'>";
-
-
-
-                                echo $fila['titulo'];
-
-                                echo "</td>";
-
-                                echo "<td>";
-
-                                echo obtenerAula($fila['id_aula'])[0];
-
-                                echo "</td>";
-
-
-                                echo "<td>";
-
-                                echo $fila['fecha_creacion'];
-
-                                echo "</td>";
-
-                                echo "<td>";
-
-                                echo  $fila['estado'];
-
-                                echo "</td>";
-                                echo "<td>";
-                                echo "<a href='insertaComentario.php?sndVarId=" . $fila["id"] . "'>";
-                                echo "Insertar";
-                                echo "</a>";
-                                echo "</td>";
-                                echo "<td>";
-                                echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
-                                echo "Modificar";
-                                echo "</a>";
-                                echo "</td>";
-                                echo "</tr>";
-                            }
-                            echo "</table>";
-                            echo "<br>";
-        
-        
-                                } else {
-                                
-                                
                                 }
-                            } else{
+                            } else {
                                 $lista = obtenerIncidenciaxUsuario($id_user);
                                 echo "<h3>TUS INCIDENCIAS</h3>";
                                 echo "<table class='container-fluid '>";
                                 echo "<th>", "Descripción", "</th>";
                                 echo "<th>", "Aula", "</th>";
-    
+
                                 echo "<th>", "Fecha de creación", "</th>";
                                 echo "<th>", "Estado", "</th>";
                                 echo "<th>", "Comentario", "</th>";
                                 echo "<th>", "Comentario", "</th>";
                                 echo "<th>", "Cerrar", "</th>";
-    
-    
+
+
                                 foreach ($lista as $fila) {
-    
+
                                     echo "<tr class='mr-2 ml-2'>";
-    
+
                                     echo "<td class='mr-2 ml-2'>";
-    
-    
-    
+
+
+
                                     echo $fila['titulo'];
-    
+
                                     echo "</td>";
-    
+
                                     echo "<td>";
-    
+
                                     echo obtenerAula($fila['id_aula'])[0];
-    
+
                                     echo "</td>";
-    
-    
+
+
                                     echo "<td>";
-    
+
                                     echo $fila['fecha_creacion'];
-    
+
                                     echo "</td>";
-    
+
                                     echo "<td>";
-    
+
                                     echo  $fila['estado'];
-    
+
                                     echo "</td>";
-                                    echo "<td>";
-                                    echo "<a href='insertaComentario.php?sndVarId=" . $fila["id"] . "'>";
-                                    echo "Insertar";
-                                    echo "</a>";
-                                    echo "</td>";
-                                    echo "<td>";
-                                    echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
-                                    echo "Modificar";
-                                    echo "</a>";
-                                    echo "</td>";
-                                    echo "<td>";
-                                    echo "<a href='proponerCierre.php?varId=" . $fila["id"] . "'>";
-                                    echo "Proponer";
-                                    echo "</a>";
-                                    echo "</td>";
+
+                                    if ($fila['estado'] != "resuelto") {
+                                        echo "<td>";
+                                        echo "<a href='insertaComentario.php?sndVarId=" . $fila["id"] . "'>";
+                                        echo "Insertar";
+                                        echo "</a>";
+                                        echo "</td>";
+                                        echo "<td>";
+                                        echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
+                                        echo "Modificar";
+                                        echo "</a>";
+                                        echo "</td>";
+                                        echo "<td>";
+                                        echo "<a href='proponerCierre.php?varId=" . $fila["id"] . "'>";
+                                        echo "Proponer";
+                                        echo "</a>";
+                                        echo "</td>";
+                                    } else {
+
+                                        echo "<td>";
+
+                                        echo "terminado";
+
+                                        echo "</td>";
+
+                                        echo "<td>";
+
+                                        echo  "terminado";
+
+                                        echo "</td>";
+
+                                        echo "<td>";
+
+                                        echo  "cerrada";
+
+                                        echo "</td>";
+
+                                        echo "</tr>";
+                                    }
+
+
                                     echo "</tr>";
                                 }
                                 echo "</table>";
                                 echo "<br>";
                             }
-                          
                         } else {
 
                             header("Location: administracionView.php");
@@ -372,27 +596,36 @@ session_start();
                     <form class="form-register" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" enctype="multipart/form-data" method="POST">
                         <fieldset>
                             <legend>Filtros incidencias</legend>
-                            fecha de creacion:
-                            <select name="fecha">
+                            Estado de la incidencia:
+                            <select name="estado">
 
+                                <option value=""><?php $lista = obtenerEstado($_SESSION["id"]); ?></option>
+                                <option value="nuevo">nuevo</option>
+                                <option value="en progreso">en progreso</option>
+                                <option value="resuelto">resuelto</option>
+                                <option value="derivado">derivado</option>
 
-
-                                <?php $lista = obtenerFecha($_SESSION["id"]);
+                            </select>
+                            Aulas:
+                            <select name="aula">
+                            
+                                <?php $lista = obtenerAulas();
 
                                 foreach ($lista as $fila) {
 
-                                    echo '<option value="' . $fila["fecha_creacion"] . '"';
+                                    echo '<option value="' . $fila["id_aula"] . '">';
 
-                                    echo $fila["fecha_creacion"];
+                                    echo $fila["numeroAula"];
+
                                     echo "</option>";
-
-                                    echo "</br>";
                                 }
+
+
                                 ?>
 
                             </select>
                             <br>
-                           
+
                             <br>
                             <button type="submit">Filtrar</button>
                         </fieldset>

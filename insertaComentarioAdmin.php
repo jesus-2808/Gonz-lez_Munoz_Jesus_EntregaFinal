@@ -3,17 +3,61 @@
 
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+
 include "databaseManager.inc.php";
 
 
 @session_start();
+function enviarMensaje($remitente, $destinatario, $asunto)
+{
+  require 'PHPMailer-master\src\PHPMailer.php';
+  require 'PHPMailer-master\src\SMTP.php';
+  require 'PHPMailer-master\src\Exception.php';
+
+  $mail = new PHPMailer();
+
+  $body = $_POST["mensaje"];
+
+  $mail->IsSMTP();
+  $mail->Host = "smtp.gmail.com";
+  $mail->SMTPSecure = 'tls';
+  $mail->SMTPAuth = true;
+  $mail->Port = 587;
+  $mail->SMTPOptions = array(
+    'ssl' => array(
+      'verify_peer' => false,
+      'verify_peer_name' => false,
+      'allow_self_signed' => true
+    )
+  );
+
+  $mail->From = $remitente;
+  $mail->FromName = 'jesus.gonzalez.munoz.al@iespoligonosur.org';
+  $mail->Username   = $remitente;
+  $mail->Password   = '7BC8an55';
+  $mail->SetFrom($remitente);
+
+  $mail->AddReplyTo($destinatario);
+  $mail->Subject    =  $asunto;
+
+
+  $mail->MsgHTML($body);
+  $mail->IsHTML(true);
+
+
+  $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
+  if (!$mail->Send()) {
+    echo "Mailer Error: " . $mail->ErrorInfo;
+  } else {
+    echo "Message has been sent";
+  }
+}
 
 if (count($_GET) > 0) {
   $id_2 = $_GET["sndVarId"];
- 
 } else {
   $id_2 = $_POST["id"];
-
 }
 $error = '';
 
@@ -21,13 +65,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   @session_start();
   $comentario = $_POST["mensaje"];
-  $cumplido=insertaComentario($comentario, $id_2, date("Y-m-d"), $_SESSION["id"]);
-  if($cumplido==true){
-    header("Location: listadoIncidenciasView.php");
+  $cumplido = insertaComentario($comentario, $id_2, date("Y-m-d"), $_SESSION["id"]);
+  if ($cumplido == true) {
+    $incidencia = obtenerIncidencia($id_2);
+    $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+    foreach ($user as $fila) {
+      if($fila["notificacionEmail"]==1){
+        enviarMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Modificada la incidencia: " . $id_2 . " con fecha " . date("Y-m-d"));
+      } else {
+        $error="Se ha actualizado el comentario, pero no se ha enviado mensaje ya que el usuario tiene desactivada esa opcion";
+      }
+      header("Location: listadoIncidenciasView.php");
+    }
+    
   }
-  } else {
-  echo "el usuario o la contraseña no son correctos";
-  }
+}
+
 
 
 
@@ -152,9 +205,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       <div id="breadcrumbs">
 
-        <a title="ver listado incidencias." href="logadosView.php" class="home">Volver a tu perfil</a>
+
+        <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+      </div>
+
+      <div id="breadcrumbs">
+
+        <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
 
       </div>
+
+      <div id="breadcrumbs">
+
+        <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
+
+
+      </div>
+
+      <div id="breadcrumbs">
+
+        <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
+
+      </div>
+    </div>
 
     </div>
     </div>
@@ -201,7 +274,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2 class="dc-mega">Inserta tu comentario de la incidencia <?php echo $id_2 ?> </h2>
 
         <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
-        <input type="hidden" name="id" value="<?php echo $id_2; ?>">
+          <input type="hidden" name="id" value="<?php echo $id_2; ?>">
           <div class="form-group">
             <label for="validationMensaje">Inserta comentario:<span class="red">*</span></label>
             <textarea class="form-control" id="mensaje" name="mensaje" rows="2" min="20"></textarea>

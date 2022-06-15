@@ -5,11 +5,18 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="../css/table.css">
+  <link rel="stylesheet" href="fontawesome-free-5.15.4-web/css/all.min.css" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Latest compiled JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"> </script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <!-- Latest compiled and minified CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Latest compiled JavaScript -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"> </script>
+
 
   <link rel='stylesheet' id='layerslider-css' href='https://iespoligonosur.org/www/wp-content/plugins/LayerSlider/static/layerslider/css/layerslider.css?ver=6.7.6' type='text/css' media='all' />
   <link rel='stylesheet' id='ls-google-fonts-css' href='https://fonts.googleapis.com/css?family=Lato:100,300,regular,700,900%7COpen+Sans:300%7CIndie+Flower:regular%7COswald:300,regular,700&#038;subset=latin%2Clatin-ext' type='text/css' media='all' />
@@ -33,42 +40,14 @@
   <link rel='stylesheet' id='sf-main-css' href='https://iespoligonosur.org/www/wp-content/themes/dante-child/style.css' type='text/css' media='all' />
   <link rel='stylesheet' id='sf-responsive-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/responsive.css' type='text/css' media='all' />
   <script src="./js/sweetalert.min.js"></script>
-  <title>Portal de incidencias</title>
-
-  <style>
-    .row g-5 {
-      margin-left: 2px;
-    }
 
 
-    h2 {
-      font-family: sans-serif;
-    }
-
-    .frame {
-      font-family: sans-serif;
-      margin-right: 3rem;
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-      margin-left: 1rem;
-    }
-
-    h1 {
-      text-align: left;
-    }
-
-    #main {
-      margin-right: auto;
-    }
-  </style>
+  <script src="./js/sweetalert.min.js"></script>
+  <title>Listado incidencias</title>
 </head>
 
 <body>
-
-
-
+  <?php include_once "../databaseManager.inc.php"; ?>
   <nav class="navbar navbar-expand-sm navbar-light bg-success">
     <div id="logo" class="logo-left has-light-logo has-dark-logo clearfix">
       <a href="https://iespoligonosur.org">
@@ -100,7 +79,9 @@
             <a class="dropdown-item" href="#">Contacto</a>
           </div>
         </li>
-
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#">Disabled</a>
+        </li>
       </ul>
       <form class="form-inline my-2 my-lg-0">
 
@@ -109,173 +90,175 @@
     </div>
   </nav>
 
-  <section>
-    <div class="page-heading  clearfix asset-bg none">
-      <div class="container">
+  <div class="page-heading  clearfix asset-bg none">
+    <div class="container">
 
-        <h1>Portal de incidencias</h1>
+      <h1>Portal de incidencias</h1>
+    
+    </div>
 
-      </div>
+    <div id="breadcrumbs">
+    <a title="login." href="../index.php" class="home">Login</a>
+    </div>
 
-      <div id="breadcrumbs">
+    <div id="breadcrumbs">
 
-        <a title="ver listado incidencias." href="listadoNoValidados.php" class="home">Listado de incidencias</a>
-
-      </div>
+      <a title="crear incidencia." href="solicitarRegistro.php" class="home">Solicitar registro</a>
 
     </div>
-    </div>
-    <div class="row g-5">
-      <div class="col-md-5 col-lg-4 order-md-last " id="frame">
-        <h4 class="d-flex justify-content-between align-items-center mb-3">
-          <span class="text-success">NOVEDADES</span>
 
-        </h4>
-        <ul class="list-group mb-3">
-          <li class="list-group-item d-flex justify-content-between lh-sm">
-            <div>
-              <a class="my-0">Abierto el plazo de becas del curso 2022/23</a>
-              <p> 18 de Abril de 2022</p>
-            </div>
+  </div>
 
-          </li>
-          <li class="list-group-item d-flex justify-content-between lh-sm">
-            <div>
-              <a class="my-0">CAMPAÑA DONACIÓN DE SANGRE</a>
-              <p class="text-muted">20 de marzo 2022</p>
-            </div>
+    
 
-          </li>
-          <li class="list-group-item d-flex justify-content-between lh-sm">
-            <div>
-              <a class="my-0">celebración del día de Andalucía en nuestro centro</a>
-              <p class="text-muted">1 de marzo 2022</p>
-            </div>
 
-          </li>
-          <li class="list-group-item d-flex justify-content-between lh-sm">
-            <div>
-              <a class="my-0">Empiezan las jornadas laborales</a>
-              <p class="text-muted">15 de diciembre de 2021</p>
-            </div>
-
-          </li>
-
-        </ul>
-      </div>
-      <div class=" col-md-7 col-lg-8">
-        <h2 class="dc-mega">Solicita tu registro para reportar incidencias</h2>
+  
+    <div class="row g-5 ml-2" >
+    
+    <table class="styled-table col-xs-11 ml-2" border="1">
+    <h2>Incidencias abiertas</h2>
+      <thead>
+        <tr>
+         
+         
+          <th>título</th>
+          <th>aula</th>
+          <th>fecha_creacion</th>
+          <th>fecha_modificacion</th>
+            <th>estado</th>
+           
+           
+        </tr>
+      </thead>
+      <tbody>
         <?php
-        include "databaseManager.inc.php";
-
-        $error = "";
-        if (count($_POST) > 0) {
-          function seguro($valor)
-          {
-            $valor = strip_tags($valor);
-            $valor = stripslashes($valor);
-            $valor = htmlspecialchars($valor);
-            return $valor;
-          }
-          if (preg_match('/^[\w.+\-]+@iespoligonosur\.org$/', $_POST["email"])) {
-            $contraseña= password_hash($_POST["passwd"], PASSWORD_DEFAULT);
-            $id = insertaPeticion(seguro($_POST["nick"]),$_POST["email"], $_POST["mensaje"],$contraseña);
-            if ($id != 0) {
-              echo "registrado con éxito. Espere que el administrador lo valide";
-              exit();
-            } else {
-              $error = "error durante la carga";
-            }
-          } else {
-            $error = "Inserte una dirección de correo válida";
-          }
+        $datos = obtenerIncidenciasAbiertas();
+        
+       
+        for ($i = 0; $i < count($datos); $i++) {
+          $texto="modificar";
+          $msj="insertar";
+          echo "<tr><td>" . $datos[$i]["titulo"] . "</td> <td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
+          <td>" . $datos[$i]["fecha_modificacion"] . "</td>   <td>" . $datos[$i]["estado"] . "</td>  </tr>";
+ 
+            
         }
-
         ?>
-        <form class="form-register" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST" enctype="multipart/form-data">
-
-          <div class="form-group ">
-            <label for="userName">Nombre de usuario</label><span class="red">*</span></label>
-            <input type="text" class="form-control" name="nick" id="inputNick" aria-describedby="emailHelp" placeholder="Introduce tu nick" required>
-
-          </div>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Cuenta de correo del instituto</label><span class="red">*</span></label>
-            <input type="email" class="form-control" name="email" id="inputEmail" aria-describedby="emailHelp" placeholder="Introduce tu correo" required>
-
-          </div>
-
-          <div class="form-group">
-            <label for="validationMensaje"> Password:<span class="red">*</span></label>
-            <p><input type="password" placeholder="Ingrese su contraseña" name="passwd" /></p>
-          </div>
-
-          <div class="form-group">
-            <label for="validationMensaje">Mensaje:<span class="red">*</span></label>
-            <textarea class="form-control" id="validationMensaje" name="mensaje" rows="2" min="20" required=""></textarea>
-          </div>
-
-          <div class="form-group mb-10">
-            <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
-            <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
-          </div>
-          <br>
-        </form>
-
+      </tbody>
+    </table>
       </div>
-    </div>
-  </section>
-  <br>
 
+      <div class="row g-5 ml-2">
+
+<table class="styled-table col-xs-11 ml-2" border="1">
+  <h2>Incidencias cerradas</h2>
+  <thead>
+    <tr>
+
+      <th>n_usuario</th>
+      <th>título</th>
+      <th>aula</th>
+      <th>fecha_creacion</th>
+      <th>fecha_modificacion</th>
+      <th>fecha_cierre</th>
+      <th>estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php
+    $datos = obtenerIncidenciasCerradas();
+
+
+    for ($i = 0; $i < count($datos); $i++) {
+      $texto = "modificar";
+      $msj = "insertar";
+      echo "<tr><td>" . obtenerNombreUsuarioxId($datos[$i]["id_usuario"])[0] . "</td> <td> <a href='detalleIncidencia.php?varId=" . $datos[$i]["id"] . "'>" . $datos[$i]["titulo"] . "</a></td><td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
+  <td>" . $datos[$i]["fecha_modificacion"] . "</td> <td>" . $datos[$i]["fecha_cierre"] . "</td>    <td>" . $datos[$i]["estado"] . "</td> </tr>";
+    }
+    ?>
+  </tbody>
+</table>
+</div>
+  </div>
+  <br>
   <section id="footer" class="footer-divider bg-secondary">
     <div class="container">
       <div id="footer-widgets" class="row clearfix">
 
-        <div class="col-sm-6">
-          <section id="text-5" class="widget widget_text clearfix">
-            <div class="textwidget">
-              <p><img class="alignnone wp-image-5415 size-full" src="https://iespoligonosur.org/www/wp-content/uploads/2021/06/sellosweb.png" alt="" width="1024" height="125"></p>
-            </div>
-          </section>
-        </div>
+        <div class="col-sm-12">
+          <div class="col-sm-3">
+            <section id="text-2" class="widget widget_text clearfix">
+              <div class="widget-heading clearfix">
+                <h6>Estamos en…</h6>
+              </div>
+              <div class="textwidget">C/Esclava del Señor 2 · 41013 · Sevilla<br>
+                Telf: +34 955 622 844<br>
+                Fax: +34 955 622 845<br>
+                Correo: info@iespoligonosur.org<br>
 
 
+                <br>
 
-        <section class="fw-row asset-bg ">
-          <div class="container-fluid">
-            <div class="row-fluid">
-              <div class="spb_gmaps_widget spb_content_element 150px">
-                <div class="spb_wrapper">
-                  <div class="spb_map_wrapper">
-                    <div class="map-canvas" style="width:100%;height:100px;" data-address="Esclava del señor 2 41013 sevilla" data-zoom="14" data-maptype="roadmap" data-mapcolor="" data-mapsaturation="mono" data-pinimage="" data-pinlink=""></div>
+                <p><img class="alignnone wp-image-5415 size-full" src="https://iespoligonosur.org/www/wp-content/uploads/2021/06/sellosweb.png" alt="" width="1024" height="125">
+
+                </p>
+
+
+                <section class="fw-row asset-bg ">
+                  <div class="container-fluid">
+                    <div class="row-fluid">
+                      <div class="spb_gmaps_widget spb_content_element 150px">
+                        <div class="spb_wrapper">
+                          <div class="spb_map_wrapper">
+                            <div class="map-canvas" style="width:100%;height:100px;" data-address="Esclava del señor 2 41013 sevilla" data-zoom="14" data-maptype="roadmap" data-mapcolor="" data-mapsaturation="mono" data-pinimage="" data-pinlink=""></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section class="container">
-          <div class="row">
-            <div class="spb_content_element col-sm-12 spb_text_column">
-              <div class="spb_wrapper clearfix">
+                </section>
+                <section class="container">
+                  <div class="row">
+                    <div class="spb_content_element col-sm-12 spb_text_column">
+                      <div class="spb_wrapper clearfix">
 
+                      </div>
+                    </div>
+                  </div>
+                </section>
               </div>
+            </section>
+          </div>
+        </div>
+  </section>
+  </div>
+
+  <section class="fw-row asset-bg ">
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="spb_gmaps_widget spb_content_element 150px">
+          <div class="spb_wrapper">
+            <div class="spb_map_wrapper">
+              <div class="map-canvas" style="width:100%;height:100px;" data-address="Esclava del señor 2 41013 sevilla" data-zoom="14" data-maptype="roadmap" data-mapcolor="" data-mapsaturation="mono" data-pinimage="" data-pinlink=""></div>
             </div>
           </div>
-        </section>
+        </div>
       </div>
+    </div>
+  </section>
+  <section class="container">
+    <div class="row">
+      <div class="col-sm-3">
+      </div>
+      <div class="spb_content_element col-sm-12 spb_text_column">
+        <div class="spb_wrapper clearfix">
+
+        </div>
+      </div>
+    </div>
   </section>
   </div>
-
-
-  </div>
-  </div>
-
-  <!--// CLOSE #footer //-->
   </section>
-
-
-
 </body>
 
 </html>

@@ -1,44 +1,98 @@
 <!DOCTYPE html>
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+
+require 'PHPMailer-master\src\PHPMailer.php';
+require 'PHPMailer-master\src\SMTP.php';
+require 'PHPMailer-master\src\Exception.php';
+
 include "databaseManager.inc.php";
+@session_start();
+function enviaMensaje($remitente, $destinatario, $asunto)
+{
 
-$estado="";
-if (count($_GET) > 0) {
-    $id = $_GET["variableId"];
-    $incidencia = obtenerIncidencia($id);
-    $estado=$incidencia["estado"];
-} else {
-    $id = $_POST["id"];
-   $incidencia=obtenerIncidencia($id);
-   $estado=$incidencia["estado"];
-}
-$error = '';
-if (count($_POST) > 0) {
 
-  
 
-    $cumplido = modificarIncidencia($id, $incidencia["id_usuario"] ,$_POST["titulo"], $incidencia["id_aula"], date("Y-m-d"), $_POST["estado"]);
-    if ($cumplido == true) {
-      
-        header("Location: listadoIncidenciasView.php");
-        $user=obtenerUsuarioxId($id); 
-        $destinatario=$user["mail"];;
-        $asunto=$_POST["titulo"];
-        $message="cambio en el estado de la incidencia";
-        mail($destinatario, $asunto, $message );
-       
+
+    $mail = new PHPMailer();
+
+    $body = $_POST["titulo"];
+
+    $mail->IsSMTP();
+    $mail->Host = "smtp.gmail.com";
+    $mail->SMTPSecure = 'tls';
+    $mail->SMTPAuth = true;
+    $mail->Port = 587;
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+
+    $mail->From = $remitente;
+    $mail->FromName = 'jesus.gonzalez.munoz.al@iespoligonosur.org';
+    $mail->Username   = $remitente;
+    $mail->Password   = '7BC8an55';
+    $mail->SetFrom($remitente);
+    $mail->AddReplyTo($destinatario);
+    $mail->Subject    =  $asunto;
+
+
+    $mail->MsgHTML($body);
+    $mail->IsHTML(true);
+
+
+    $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
+    if (!$mail->Send()) {
+        echo "Mailer Error: " . $mail->ErrorInfo;
     } else {
-        $error = "Datos incorrectos o no se ha actualizado nada";
+        echo "Message has been sent";
     }
 }
 
 
+$estado = "";
 
+if (count($_GET) > 0) {
+    $id = $_GET["variableId"];
+    $incidencia = obtenerIncidencia($id);
+    $estado = $incidencia["estado"];
+} else {
+    $id = $_POST["id"];
+    $incidencia = obtenerIncidencia($id);
+    $estado = $incidencia["estado"];
+}
+$error = '';
+if (count($_POST) > 0) {
+    $estadoModif = $_POST["estado"];
+    if ($estadoModif != "resuelto") {
+        modificarIncidencia($id, $incidencia["id_usuario"], $_POST["titulo"], $incidencia["id_aula"], date("Y-m-d"), $estadoModif);
+        $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+        foreach ($user as $fila) {
+            if ($fila['notificacionEmail'] == 1) {
+                enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " . date("Y-m-d"));
+            } else {
+                echo '<script language="javascript">swal("El creador de la incidencia no desea recibir notificaciones por correo");</script>';
+            }
+        }
 
+        header("Location: listadoIncidenciasView.php");
+    } else if ($estadoModif == "resuelto") {
+        cambiarEstado(date("Y-m-d"), $estadoModif, $id);
+        $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+        foreach ($user as $fila) {
 
+            enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Cerrada: " . $id . " con fecha " . date("Y-m-d"));
+        }
 
-
+        header("Location: listadoIncidenciasView.php");
+    } else {
+        echo "no se ha realizado la operación correctamente";
+    }
+}
 
 
 
@@ -163,12 +217,39 @@ if (count($_POST) > 0) {
 
             </div>
 
+
             <div id="breadcrumbs">
 
+
+                <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
+            </div>
+
+
+            <div id="breadcrumbs">
+
+
                 <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
 
             </div>
 
+            <div id="breadcrumbs">
+
+                <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
+
+
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
+
+            </div>
+        </div>
         </div>
         </div>
         <div class="row g-5">
@@ -211,34 +292,40 @@ if (count($_POST) > 0) {
             </div>
             <div class=" col-md-7 col-lg-8">
                 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
-                
-            <input type="hidden" name="id" value="<?php echo $incidencia["id"]; ?>">
+
+                    <input type="hidden" name="id" value="<?php echo $incidencia["id"]; ?>">
 
                     <div class="form-group ">
                         <label for="nombre">titulo de la incidencia</label>
-                        <input type="text" class="form-control" name="titulo" value='<?php echo $incidencia["titulo"]; ?>' aria-describedby="titulo" placeholder='<?php echo $incidencia["titulo"]; ?>' >
+                        <input type="text" class="form-control" name="titulo" value='<?php echo $incidencia["titulo"]; ?>' aria-describedby="titulo" placeholder='<?php echo $incidencia["titulo"]; ?>'>
 
                     </div>
 
 
                     <div class=form-group>
-                    <label for="validar">Seleccionar estado</label>
-            <input type="radio" name="estado" id="en_progreso" value="en progreso" <?php if ($estado=="en progreso") { echo "checked"; }?>> En progreso
-            <input type="radio" name="estado" id="resuelto" value="resuelto" <?php if ($estado=="resuelto") { echo "checked"; }?>> Resuelto
-            <input type="radio" name="estado" id="derivado" value="derivado" <?php if ($estado=="derivado") { echo "checked"; }?>> Derivado
-            <br>
+                        <label for="validar">Seleccionar estado</label>
+                        <input type="radio" name="estado" id="en_progreso" value="en progreso" <?php if ($estado == "en progreso") {
+                                                                                                    echo "checked";
+                                                                                                } ?>> En progreso
+                        <input type="radio" name="estado" id="resuelto" value="resuelto" <?php if ($estado == "resuelto") {
+                                                                                                echo "checked";
+                                                                                            } ?>> Resuelto
+                        <input type="radio" name="estado" id="derivado" value="derivado" <?php if ($estado == "derivado") {
+                                                                                                echo "checked";
+                                                                                            } ?>> Derivado
+                        <br>
+
+                    </div>
+
+
+                    <div class="form-group mb-10">
+                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
+                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
+                    </div>
+                    <br>
+                </form>
 
             </div>
-
-
-            <div class="form-group mb-10">
-                <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
-                <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
-            </div>
-            <br>
-            </form>
-
-        </div>
         </div>
     </section>
     <br>

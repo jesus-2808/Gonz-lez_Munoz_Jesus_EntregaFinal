@@ -11,13 +11,13 @@ $id_aula = $incidencia["id_aula"];
 $nombreAula = obtenerAula($id_aula);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-       
+
     @session_start();
     $comentario = $_POST["mensaje"];
     insertaComentario($comentario, $id, date("Y-m-d"), $_SESSION["id"]);
-    } else {
-        echo "el usuario o la contraseña no son correctos";
-    }
+} else {
+    echo "el usuario o la contraseña no son correctos";
+}
 
 ?>
 
@@ -175,20 +175,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div id="breadcrumbs">
 
+
                 <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
 
 
             </div>
 
             <div id="breadcrumbs">
 
-                <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
-
+                <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
 
             </div>
+        </div>
 
-        </div>
-        </div>
+        
         <br>
         <br>
         <div class="row g-5">

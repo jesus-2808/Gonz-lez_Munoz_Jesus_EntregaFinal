@@ -15,9 +15,9 @@ if (count($_GET) > 0) {
 $error = '';
 if (count($_POST) > 0) {
 
-   
 
-    $cumplido = modificarUsuario($id, $_POST["nombre"], $_POST["rol"], $_POST["mail"],$_POST["validar"]);
+
+    $cumplido = modificarUsuario($id, $_POST["nombre"], $_POST["rol"], $_POST["mail"], $_POST["validar"]);
     if ($cumplido == true) {
         header("Location: administrarUsuarios.php");
         exit();
@@ -158,9 +158,29 @@ if (count($_POST) > 0) {
 
             <div id="breadcrumbs">
 
+
                 <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
 
             </div>
+
+            <div id="breadcrumbs">
+
+                <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
+
+
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
+
+            </div>
+        </div>
 
         </div>
         </div>
@@ -204,12 +224,12 @@ if (count($_POST) > 0) {
             </div>
             <div class=" col-md-7 col-lg-8">
                 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
-                
-            <input type="hidden" name="id" value="<?php echo $user["id"]; ?>">
+
+                    <input type="hidden" name="id" value="<?php echo $user["id"]; ?>">
 
                     <div class="form-group ">
                         <label for="nombre">Nombre del usuario</label>
-                        <input type="text" class="form-control" name="nombre" value='<?php echo $user["nombre"]; ?>' aria-describedby="nombre" placeholder='<?php echo $user["nombre"]; ?>' >
+                        <input type="text" class="form-control" name="nombre" value='<?php echo $user["nombre"]; ?>' aria-describedby="nombre" placeholder='<?php echo $user["nombre"]; ?>'>
 
                     </div>
 
@@ -226,22 +246,26 @@ if (count($_POST) > 0) {
                     </div>
 
                     <div class=form-group>
-                    <label for="validar">validar</label>
-            <input type="radio" name="validar" id="validar" value="1" <?php if ($user["validacionEmail"]==1) { echo "checked"; }?>> True
-            <input type="radio" name="validar" id="validar" value="0" <?php if ($user["validacionEmail"]==0) { echo "checked"; }?>> False
-            <br>
+                        <label for="validar">validar</label>
+                        <input type="radio" name="validar" id="validar" value="1" <?php if ($user["validacionEmail"] == 1) {
+                                                                                        echo "checked";
+                                                                                    } ?>> True
+                        <input type="radio" name="validar" id="validar" value="0" <?php if ($user["validacionEmail"] == 0) {
+                                                                                        echo "checked";
+                                                                                    } ?>> False
+                        <br>
+
+                    </div>
+
+
+                    <div class="form-group mb-10">
+                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
+                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
+                    </div>
+                    <br>
+                </form>
 
             </div>
-
-
-            <div class="form-group mb-10">
-                <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
-                <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
-            </div>
-            <br>
-            </form>
-
-        </div>
         </div>
     </section>
     <br>

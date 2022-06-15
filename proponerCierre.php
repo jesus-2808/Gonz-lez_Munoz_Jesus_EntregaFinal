@@ -7,7 +7,7 @@ $id = $_GET["varId"];
 
 $error = 'Se ha solicitado el cierre de la incidencia ' . $id;
 solicitudCierre(1, $id);
-   
+
 
 
 ?>
@@ -133,7 +133,32 @@ solicitudCierre(1, $id);
 
             <div id="breadcrumbs">
 
+
+                <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
+            </div>
+
+            <div id="breadcrumbs">
+
+
                 <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
+
+
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
 
             </div>
 

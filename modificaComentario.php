@@ -7,10 +7,59 @@ include "databaseManager.inc.php";
 
 
 @session_start();
+use PHPMailer\PHPMailer\PHPMailer;
+
+
+function enviaMensaje($remitente, $destinatario, $asunto)
+{
+    require 'PHPMailer-master\src\PHPMailer.php';
+    require 'PHPMailer-master\src\SMTP.php';
+    require 'PHPMailer-master\src\Exception.php';
+
+    $mail = new PHPMailer();
+
+    $body = $_POST["titulo"];
+
+    $mail->IsSMTP();
+    $mail->Host = "smtp.gmail.com";
+    $mail->SMTPSecure = 'tls';
+    $mail->SMTPAuth = true;
+    $mail->Port = 587;
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+
+    $mail->From = $remitente;
+    $mail->FromName = "Jesus";
+    $mail->Username   = $remitente;
+    $mail->Password   = '7BC8an55';
+    $mail->SetFrom($remitente);
+
+    $mail->AddReplyTo($destinatario);
+    $mail->Subject    =  $asunto;
+
+
+    $mail->MsgHTML($body);
+    $mail->IsHTML(true);
+
+
+    $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
+    if (!$mail->Send()) {
+        echo "Mailer Error: " . $mail->ErrorInfo;
+    } else {
+        echo "Message has been sent";
+    }
+}
 
 if (count($_GET) > 0) {
   $id_inc = $_GET["varId"];
  $comentario=obtenerComentarioxIncidencia($id_inc);
+ $incidencia=obtenerIncidencia($id_inc);
+ var_dump($incidencia);
 } else {
   $id_inc = $_POST["id_inc"];
  
@@ -30,6 +79,10 @@ if (count($_POST) > 0) {
   $cumplido = editarComentario($_POST["id"],  $_POST["mensaje"], $_POST["id_inc"], date("Y-m-d"), $_SESSION["id"]);
  
   if ($cumplido == true) {
+    $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+    foreach ($user as $fila) {
+        enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " .date("Y-m-d"));
+    }
       header("logadosView.php");
       
   } else {

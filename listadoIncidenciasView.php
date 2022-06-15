@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+<?php
+session_start();
+if (isset($_SESSION["rol"])) {
+  if ($_SESSION["rol"] != "administrador") {
+    header("Location: logadosView.php");
+  }
+} else {
+  echo "error en la sesion";
+}
+?>
 
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/botonera.css">
   <link rel="stylesheet" href="css/table.css">
   <link rel="stylesheet" href="fontawesome-free-5.15.4-web/css/all.min.css" />
 
@@ -99,88 +108,137 @@
 
     <div id="breadcrumbs">
 
-      <a title="Ver página instituto" href="https://iespoligonosur.org" class="home">Página principal</a>
-    
-      <a title="Administrar Usuarios" href="administrarUsuarios.php" class="home">Administrar Usuarios</a>
 
-      <a title="Administrar Usuarios" href="administracionView.php" class="home">Validar Usuarios</a>
-     
+      <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
     </div>
+
+    <div id="breadcrumbs">
+
+
+      <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+    </div>
+
+    <div id="breadcrumbs">
+
+      <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+
+    </div>
+
+    <div id="breadcrumbs">
+
+      <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
+
+
+    </div>
+
+    <div id="breadcrumbs">
+
+      <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
+
+    </div>
+  </div>
 
   </div>
 
 
   <div class="row g-5 ml-2">
-  <table class="styled-table col-xs-11 ml-2" border="1">
-    <h2>Incidencias para cerrar</h2>
+    <table class="styled-table col-xs-11 ml-2" border="1">
+      <h2>Incidencias para cerrar</h2>
       <thead>
         <tr>
-         
+
           <th>n_usuario</th>
           <th>título</th>
           <th>aula</th>
           <th>fecha_creacion</th>
-            <th>estado</th>
-            <th>cerrar</th>
-            
+          <th>estado</th>
+          <th>cerrar</th>
+
         </tr>
       </thead>
       <tbody>
         <?php
         $incPdte = obtenerIncidenciaPdteCierre();
-        $mensaje="cerrar";
-        
-        
+        $mensaje = "cerrar";
+
+
         for ($i = 0; $i < count($incPdte); $i++) {
-          echo "<tr><td>" . $incPdte[$i]["id_usuario"] . "</td> <td> <a href='detalleIncidencia.php?varId=".$incPdte[$i]["id"]."'>" . $incPdte[$i]["titulo"] . "</a></td><td>" . obtenerAula($incPdte[$i]["id_aula"])[0] . "</td><td>" . $incPdte[$i]["fecha_creacion"] . "</td>
-            <td>" . $incPdte[$i]["estado"] . "</td>  <td> <a href='cerrarIncidencia.php?variableId=".$incPdte[$i]["id"]."'>" . $mensaje. "</a></td>  </tr>";
- 
-            
+          echo "<tr><td>" . obtenerNombreUsuarioxId($incPdte[$i]["id_usuario"])["nombre"] . "</td> <td> <a href='detalleIncidencia.php?varId=" . $incPdte[$i]["id"] . "'>" . $incPdte[$i]["titulo"] . "</a></td><td>" . obtenerAula($incPdte[$i]["id_aula"])[0] . "</td><td>" . $incPdte[$i]["fecha_creacion"] . "</td>
+            <td>" . $incPdte[$i]["estado"] . "</td>  <td> <a href='cerrarIncidencia.php?variableId=" . $incPdte[$i]["id"] . "'>" . $mensaje . "</a></td>  </tr>";
         }
         ?>
       </tbody>
     </table>
-   
 
-      </h4>
-  
-    </div>
-    <div class="row g-5 ml-2" >
-    
+
+    </h4>
+
+  </div>
+  <div class="row g-5 ml-2">
+
     <table class="styled-table col-xs-11 ml-2" border="1">
-    <h2>Incidencias abiertas</h2>
+      <h2>Incidencias abiertas</h2>
       <thead>
         <tr>
-         
+
           <th>n_usuario</th>
           <th>título</th>
           <th>aula</th>
           <th>fecha_creacion</th>
           <th>fecha_modificacion</th>
           <th>fecha_cierre</th>
-            <th>estado</th>
-            <th>modificar</th>
-            <th>comentario</th>
-           
+          <th>estado</th>
+          <th>modificar Inc.</th>
+          <th>comentario</th>
+
         </tr>
       </thead>
       <tbody>
         <?php
-        $datos = obtenerIncidencias();
-        
-       
+        $datos = obtenerIncidenciasAbiertas();
+
+
         for ($i = 0; $i < count($datos); $i++) {
-          $texto="modificar";
-          $msj="insertar";
-          echo "<tr><td>" . $datos[$i]["id_usuario"] . "</td> <td> <a href='detalleIncidencia.php?varId=".$datos[$i]["id"]."'>" . $datos[$i]["titulo"] . "</a></td><td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
-          <td>" . $datos[$i]["fecha_modificacion"] . "</td> <td>" . $datos[$i]["fecha_cierre"] . "</td>    <td>" . $datos[$i]["estado"] . "</td>  <td> <a href='modificarIncidencia.php?variableId=".$datos[$i]["id"]."'>" . $texto. "</a></td>  <td> <a href='insertaComentarioAdmin.php?sndVarId=".$datos[$i]["id"]."'>" . $msj. "</a></td> </tr>";
- 
-            
+          $texto = "modificar";
+          $msj = "insertar";
+          echo "<tr><td>" . obtenerNombreUsuarioxId($datos[$i]["id_usuario"])[0] . "</td> <td> <a href='detalleIncidencia.php?varId=" . $datos[$i]["id"] . "'>" . $datos[$i]["titulo"] . "</a></td><td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
+            <td>" . $datos[$i]["fecha_modificacion"] . "</td> <td>" . $datos[$i]["fecha_cierre"] . "</td>  <td>" . $datos[$i]["estado"] . "</td>  <td> <a href='modificarIncidencia.php?variableId=" . $datos[$i]["id"] . "'>" . $texto . "</a></td>  <td> <a href='insertaComentarioAdmin.php?sndVarId=" . $datos[$i]["id"] . "'>" . $msj . "</a></td> </tr>";
         }
         ?>
       </tbody>
     </table>
-      </div>
+  </div>
+  <div class="row g-5 ml-2">
+
+    <table class="styled-table col-xs-11 ml-2" border="1">
+      <h2>Incidencias cerradas</h2>
+      <thead>
+        <tr>
+
+          <th>n_usuario</th>
+          <th>título</th>
+          <th>aula</th>
+          <th>fecha_creacion</th>
+          <th>fecha_modificacion</th>
+          <th>fecha_cierre</th>
+          <th>estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $datos = obtenerIncidenciasCerradas();
+
+
+        for ($i = 0; $i < count($datos); $i++) {
+          $texto = "modificar";
+          $msj = "insertar";
+          echo "<tr><td>" . obtenerNombreUsuarioxId($datos[$i]["id_usuario"])[0] . "</td> <td> <a href='detalleIncidencia.php?varId=" . $datos[$i]["id"] . "'>" . $datos[$i]["titulo"] . "</a></td><td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
+      <td>" . $datos[$i]["fecha_modificacion"] . "</td> <td>" . $datos[$i]["fecha_cierre"] . "</td>    <td>" . $datos[$i]["estado"] . "</td> </tr>";
+        }
+        ?>
+      </tbody>
+    </table>
+  </div>
   </div>
   <br>
   <section id="footer" class="footer-divider bg-secondary">

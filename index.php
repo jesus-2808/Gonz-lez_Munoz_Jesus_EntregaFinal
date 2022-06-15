@@ -1,44 +1,42 @@
 <!DOCTYPE html>
 <?php
 ob_start();
-    include "databaseManager.inc.php";
+include "databaseManager.inc.php";
 
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-       
-        @session_start();
-        $nombre = $_POST["nombre"];
-        $correo = $_POST["email"];
-        $pass =  $_POST["passwd"];
-        $datosUsu = getUser($nombre);
-       
-        
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    @session_start();
+    $correo = $_POST["email"];
+    $pass =  $_POST["passwd"];
+    $datosUsu = getUser($correo);
 
 
-        if ($datosUsu != '') {  
-            if (password_verify($pass, $datosUsu["password"])) {
 
-                $_SESSION["id"] = $datosUsu["id"];
-                $_SESSION["rol"] = $datosUsu["rol"];
-                $_SESSION["nombre"] = $datosUsu["nombre"];
-                $_SESSION["mail"] = $datosUsu["mail"];
 
-                if ($_SESSION["rol"] == "administrador" ) {
-                    echo "redireccion";
-                 header("Location: administracionView.php");
-                } else {
-                    header("Location: logadosView.php");
-                }
+    if ($datosUsu != '') {
+        if (password_verify($pass, $datosUsu["password"])) {
+
+            $_SESSION["id"] = $datosUsu["id"];
+            $_SESSION["rol"] = $datosUsu["rol"];
+            $_SESSION["nombre"] = $datosUsu["nombre"];
+            $_SESSION["mail"] = $datosUsu["mail"];
+
+
+            if ($_SESSION["rol"] == "administrador") {
+                echo "redireccion";
+                header("Location: administracionView.php");
             } else {
-                var_dump($pass);
-                echo "hay error";
+                header("Location: logadosView.php");
             }
-          
-            }
-            else {
-            echo "el usuario o la contraseña no son correctos";
+        } else {
+            
+            echo "hay error";
         }
+    } else {
+        echo "el usuario o la contraseña no son correctos";
     }
+}
 ob_end_flush();
 ?>
 <html lang="en">
@@ -56,7 +54,7 @@ ob_end_flush();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"> </script>
-    
+
     <link rel='stylesheet' id='layerslider-css' href='https://iespoligonosur.org/www/wp-content/plugins/LayerSlider/static/layerslider/css/layerslider.css?ver=6.7.6' type='text/css' media='all' />
     <link rel='stylesheet' id='ls-google-fonts-css' href='https://fonts.googleapis.com/css?family=Lato:100,300,regular,700,900%7COpen+Sans:300%7CIndie+Flower:regular%7COswald:300,regular,700&#038;subset=latin%2Clatin-ext' type='text/css' media='all' />
     <link rel='stylesheet' id='wp-block-library-css' href='https://iespoligonosur.org/www/wp-includes/css/dist/block-library/style.min.css?ver=5.4.10' type='text/css' media='all' />
@@ -168,9 +166,10 @@ ob_end_flush();
 
             </div>
 
+
             <div id="breadcrumbs">
 
-                <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+                <a title="ver listado incidencias." href="no_validados/listadoNoValidados.php" class="home">Listado de incidencias</a>
 
             </div>
 
@@ -217,16 +216,12 @@ ob_end_flush();
             <div class=" col-md-6 col-lg-7">
                 <h2 class="dc-mega">Accede al sistema</h2>
 
-                
-                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
-                    <div class="form-group ">
-                        <label for="userName">Nombre de usuario</label>
-                        <input type="text" class="form-control" name="nombre"  aria-describedby="emailHelp" placeholder="Introduce tu nick" required>
 
-                    </div>
+                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+        
                     <div class="form-group">
                         <label for="exampleInputEmail1">Cuenta de correo del instituto</label>
-                        <input type="email" class="form-control" name="email"  aria-describedby="emailHelp" placeholder="Introduce tu correo" required>
+                        <input type="email" class="form-control" name="email" aria-describedby="emailHelp" placeholder="Introduce tu correo" required>
 
                     </div>
 
@@ -235,6 +230,7 @@ ob_end_flush();
                         <p><input type="password" placeholder="Ingrese su contraseña" name="passwd" /></p>
                     </div>
                     <div class="form-group mb-10">
+                    <p><a href="no_validados/solicitarRegistro.php">¿No tienes cuenta? Solicita tu registro</a></p>
                         <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
                         <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
                     </div>

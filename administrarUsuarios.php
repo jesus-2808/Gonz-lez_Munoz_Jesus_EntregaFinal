@@ -99,8 +99,8 @@
 
         <div id="breadcrumbs">
 
-            <a title="Ver página instituto" href="https://iespoligonosur.org" class="home">Página principal</a>
 
+            <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
         </div>
 
         <div id="breadcrumbs">
@@ -110,11 +110,22 @@
 
         <div id="breadcrumbs">
 
-            <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
+            <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+
+        </div>
+
+        <div id="breadcrumbs">
+
+            <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
 
 
         </div>
 
+        <div id="breadcrumbs">
+
+            <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
+
+        </div>
 
     </div>
 
@@ -140,12 +151,12 @@
             <tbody>
                 <?php
                 $datos = obtenerUsuarios();
-                $mensaje="modificar";
-                $elimina="eliminar";
+                $mensaje = "modificar";
+                $elimina = "eliminar";
                 for ($i = 0; $i < count($datos); $i++) {
                     echo "<tr><td>" . $datos[$i]["id"] . "</td> <td>" . $datos[$i]["nombre"] . "</td>  <td>" . $datos[$i]["mail"] . "</td> 
-                    <td> <a href='modificarUsuario.php?variableId=".$datos[$i]["id"]."'>" . $mensaje. "</a></td>
-                    <td> <a href='eliminarUsuario.php?variableId=".$datos[$i]["id"]."'>" . $elimina. "</a></td></tr>";
+                    <td> <a href='modificarUsuario.php?variableId=" . $datos[$i]["id"] . "'>" . $mensaje . "</a></td>
+                    <td> <a href='eliminarUsuario.php?variableId=" . $datos[$i]["id"] . "'>" . $elimina . "</a></td></tr>";
                 }
                 ?>
             </tbody>

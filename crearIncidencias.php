@@ -8,22 +8,28 @@ include "databaseManager.inc.php";
 if (count($_POST) > 0) {
     function seguro($valor)
     {
-      $valor = strip_tags($valor);
-      $valor = stripslashes($valor);
-      $valor = htmlspecialchars($valor);
-      return $valor;
+        $valor = strip_tags($valor);
+        $valor = stripslashes($valor);
+        $valor = htmlspecialchars($valor);
+        return $valor;
     }
-   
-      $id =insertaIncidencia($_SESSION["id"], $_POST["titulo"], $_POST["aula"],date("Y-m-d") ,'', '', "nuevo", '');
-      if ($id != 0) {
-        
-        header("Location: logadosView.php");
-        exit();
-      } else {
+
+    $id = insertaIncidencia($_SESSION["id"], $_POST["titulo"], $_POST["aula"], date("Y-m-d"), '', '', "nuevo", '');
+    if ($id != 0) {
+        if (isset($_SESSION["rol"])) {
+            if ($_SESSION["rol"] != "administrador") {
+                header("Location: logadosView.php");
+            } else {
+                header("Location: listadoIncidenciasView.php");
+                exit();
+            }
+        } else {
+            echo "error en la sesion";
+        }
+    } else {
         $error = "error durante la carga";
-      }
-   
-  }
+    }
+}
 
 
 
@@ -35,7 +41,7 @@ if (count($_POST) > 0) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Crear incidencia</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -71,6 +77,7 @@ if (count($_POST) > 0) {
     <style>
         .row g-5 {
             margin-left: 2px;
+            display: inline-block;
         }
 
 
@@ -81,6 +88,7 @@ if (count($_POST) > 0) {
         .frame {
             font-family: sans-serif;
             margin-right: 3rem;
+
         }
 
         .form-group {
@@ -155,15 +163,66 @@ if (count($_POST) > 0) {
                 <h1>Portal de incidencias</h1>
 
             </div>
+            <?php
 
-            <div id="breadcrumbs">
+            if (isset($_SESSION["rol"])) {
+                if ($_SESSION["rol"] != "administrador") {
+                    menuUsuario();
+                } else {
+                    menuAdmin();
+                    header("Location: listadoIncidenciasView.php");
+                    exit();
+                }
+            } else {
+                echo "error en la sesion";
+            }
 
-                <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+            function menuUsuario()
+            {
 
-            </div>
+                echo " <div id='breadcrumbs'>";
+                echo " <a title='cerrar Sesion.' href='cerrarSesion.php' class='home'>Cerrar sesion</a>";
 
+                echo " </div>";
+
+                echo " <div id='breadcrumbs'>";
+                echo " <a title='tu perfil.' href='logadosView.php' class='home'>Tu perfil</a>";
+
+                echo " </div>";
+            }
+            function menuAdmin()
+            {
+
+                echo " <div id='breadcrumbs'>";
+                echo " <a title='ver listado incidencias.' href='listadoIncidenciasView.php' class='home'>Listado de incidencias</a>";
+
+                echo " </div>";
+
+                echo " <div id='breadcrumbs'>";
+
+                echo  "<a title='crear incidencia.' href='crearIncidencias.php' class='home'>Crear incidencia</a>";
+
+                echo " </div>";
+
+                echo "<div id='breadcrumbs'>";
+
+                echo "<a title='validar usuarios.' href='administracionView.php' class='home'>Validar usuarios</a>";
+
+
+                echo "</div>";
+
+                echo "  <div id='breadcrumbs'>";
+
+                echo    "<a title='ver listado incidencias.' href='administrarUsuarios.php' class='home'>Administrar usuarios</a>";
+
+                echo "</div>";
+
+                echo "  </div>";
+            }
+
+            ?>
         </div>
-        </div>
+
         <div class="row g-5">
             <div class="col-md-5 col-lg-4 order-md-last " id="frame">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -213,39 +272,39 @@ if (count($_POST) > 0) {
 
                     </div>
 
-                        <div class="form-group">
-                            <label for="aula">Identificador del aula</label>
-                            <select class="form-control" name="aula" id="exampleFormControlSelect1">
+                    <div class="form-group">
+                        <label for="aula">Identificador del aula</label>
+                        <select class="form-control" name="aula" id="exampleFormControlSelect1">
 
-                                <?php $lista = obtenerAulas();
+                            <?php $lista = obtenerAulas();
 
-                                foreach ($lista as $fila) {
+                            foreach ($lista as $fila) {
+                                echo '<option value="' . $fila["id_aula"] . '">';
 
-                                    echo '<option value="' . $fila["id_aula"] . '"';
+                                echo $fila["numeroAula"];
 
-                                    echo $fila["id_aula"];
-                                    echo "</option>";
+                                echo "</option>";
+                            }
 
-                                    echo "</br>";
-                                }
 
-                    
-                                ?>
-                            </select>
-                        </div>
-
+                            ?>
+                        </select>
                     </div>
-
-                  
                     <div class="form-group mb-10">
                         <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
                         <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
                     </div>
                     <br>
                 </form>
+
             </div>
+
+
+
+        </div>
         </div>
     </section>
+
 
 
     <section id="footer" class="footer-divider bg-secondary">

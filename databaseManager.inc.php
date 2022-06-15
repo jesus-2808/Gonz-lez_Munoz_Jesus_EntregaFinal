@@ -44,17 +44,16 @@ function obtenerIncidencias()
     return $miArray;
 }
 
-function getUser($nombre)
+function getUser($mail)
 {
     global $servidor, $baseDatos, $usuario, $passw;
     try {
         $conexion = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
 
-        $sql = $conexion->prepare("SELECT * from usuarios where nombre=?");
-        $sql->bindParam(1, $nombre);
+        $sql = $conexion->prepare("SELECT * from usuarios where mail=?");
+        $sql->bindParam(1, $mail);
         $sql->execute();
         $fila = $sql->fetch(PDO::FETCH_ASSOC);
-        var_dump($fila);
         $conexion = null;
         return $fila;
     } catch (PDOException $e) {
@@ -62,8 +61,6 @@ function getUser($nombre)
         echo "ha fallao";
     }
 }
-
-
 
 function updatePassword($nombre, $password)
 {
@@ -83,7 +80,7 @@ function updatePassword($nombre, $password)
     } catch (PDOException $e) {
         echo $e;
     }
-    $conexion = null;
+    $con = null;
     return $retorno;
 }
 
@@ -353,14 +350,14 @@ function obtenerFecha($id_usuario)
     return $arrayPos;
 }
 
-function obtenerIncidenciaxFecha($fecha_creacion, $id_usuario){
+function obtenerIncidenciasxAula($id_aula, $id_usuario){
     global $servidor, $baseDatos, $usuario, $passw;
 
     try {
         $conexion = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
-        $sql = $conexion->prepare("SELECT * from incidencias where fecha_creacion=:fecha_creacion AND id_usuario=:id_usuario");
+        $sql = $conexion->prepare("SELECT * from incidencias where id_aula=:id_aula AND id_usuario=:id_usuario");
 
-        $sql->bindParam(":fecha_creacion", $fecha_creacion);
+        $sql->bindParam(":id_aula", $id_aula);
         $sql->bindParam(":id_usuario", $id_usuario);
         $sql->execute();
 
@@ -478,26 +475,22 @@ function eliminarUsuario($id){
     return $retorno;
 }
 
-function obtenerUsuarioxId($id){
+function obtenerNombreUsuarioxId($id){
     global $servidor, $baseDatos, $usuario, $passw;
 
+    global $servidor, $baseDatos, $usuario, $passw;
     try {
         $conexion = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
-        $sql = $conexion->prepare("SELECT * from usuarios where id=:id");
+        $sql = $conexion->prepare("SELECT nombre from usuarios where id=:id");
 
-       
         $sql->bindParam(":id", $id);
         $sql->execute();
 
-        $miArray = [];
-        while ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
-            $miArray[] = $row;
-        }
+        return $sql->fetch();
     } catch (PDOException $e) {
-        echo "conexion fallida: " . $e->getMessage();
+        echo $e;
     }
     $conexion = null;
-    return $miArray;
 }
 
 function modificarUsuario($id, $nombre,$rol, $mail, $validacionEmail){
@@ -567,6 +560,157 @@ function modificarIncidencia($id, $id_usuario, $titulo, $id_aula, $fecha_modific
     }
     $con = null;
     return $retorno;
+}
+
+function obtenerEstado($id_usuario)
+{
+    global $servidor, $baseDatos, $usuario, $passw;
+    try {
+        $conexion = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
+        $sql = $conexion->prepare("SELECT distinct estado from incidencias where id_usuario=:id_usuario");
+        $sql->bindParam(":id_usuario", $id_usuario);
+        $sql->execute();
+        $arrayPos = [];
+        while ($fila = $sql->fetch(PDO::FETCH_ASSOC)) {
+            $arrayPos[] = $fila;
+        }
+     
+    } catch (PDOException $e) {
+        echo "Connection fallida: " . $e->getMessage();
+        echo "<br>";
+    }
+    $conexion = null;
+    return $arrayPos;
+}
+
+function obtenerIncidenciaxEstado($estado, $id_usuario){
+    global $servidor, $baseDatos, $usuario, $passw;
+
+    try {
+        $conexion = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
+        $sql = $conexion->prepare("SELECT * from incidencias where estado=:estado AND id_usuario=:id_usuario");
+
+        $sql->bindParam(":estado", $estado);
+        $sql->bindParam(":id_usuario", $id_usuario);
+        $sql->execute();
+
+        $miArray = [];
+        while ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
+            $miArray[] = $row;
+        }
+    } catch (PDOException $e) {
+        echo "conexion fallida: " . $e->getMessage();
+    }
+    $conexion = null;
+    return $miArray;
+}
+
+function obtenerIncidenciasAbiertas(){
+    global $servidor, $baseDatos, $usuario, $passw;
+
+    try {
+        $conexion = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
+        $sql = $conexion->prepare("SELECT * from incidencias  WHERE estado NOT LIKE '%resuelto%'");
+
+        
+        $sql->execute();
+
+        $miArray = [];
+        while ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
+            $miArray[] = $row;
+        }
+    } catch (PDOException $e) {
+        echo "conexion fallida: " . $e->getMessage();
+    }
+    $conexion = null;
+    return $miArray;
+}
+
+function obtenerIncidenciasCerradas(){
+    global $servidor, $baseDatos, $usuario, $passw;
+
+    try {
+        $conexion = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
+        $sql = $conexion->prepare("SELECT * from incidencias  WHERE estado = 'resuelto'");
+
+        
+        $sql->execute();
+
+        $miArray = [];
+        while ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
+            $miArray[] = $row;
+        }
+    } catch (PDOException $e) {
+        echo "conexion fallida: " . $e->getMessage();
+    }
+    $conexion = null;
+    return $miArray;
+}
+
+function obtenerUsuarioxId($id){
+    global $servidor, $baseDatos, $usuario, $passw;
+
+    try {
+        $conexion = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
+        $sql = $conexion->prepare("SELECT * from usuarios where id=:id");
+
+       
+        $sql->bindParam(":id", $id);
+        $sql->execute();
+
+        $miArray = [];
+        while ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
+            $miArray[] = $row;
+        }
+    } catch (PDOException $e) {
+        echo "conexion fallida: " . $e->getMessage();
+    }
+    $conexion = null;
+    return $miArray;
+}
+
+function modifOpcNotificaciones($nombre, $notificacionEmail)
+{
+    $retorno = false;
+    global $servidor, $baseDatos, $usuario, $passw;
+    try {
+
+        $con = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
+        $sql = $con->prepare("UPDATE usuarios SET notificacionEmail=:notificacionEmail WHERE nombre=:nombre");
+        $sql->bindParam(":notificacionEmail", $notificacionEmail);
+        $sql->bindParam(":nombre", $nombre);
+        $e = $sql->execute();
+        if ($sql->rowCount() > 0) {
+            $retorno = true;
+        }
+    } catch (PDOException $e) {
+        echo $e;
+    }
+    $con = null;
+    return $retorno;
+}
+
+function obtenerIncidenciaXEstadoYAula($estado, $id_usuario, $id_aula){
+    global $servidor, $baseDatos, $usuario, $passw;
+
+    try {
+        $conexion = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
+        $sql = $conexion->prepare("SELECT * from incidencias where estado=:estado AND id_usuario=:id_usuario AND id_aula=:id_aula");
+
+        $sql->bindParam(":estado", $estado);
+        $sql->bindParam(":id_usuario", $id_usuario);
+        $sql->bindParam(":id_aula", $id_aula);
+        $sql->execute();
+
+        $miArray = [];
+        while ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
+            $miArray[] = $row;
+        }
+    } catch (PDOException $e) {
+        echo "conexion fallida: " . $e->getMessage();
+    }
+    $conexion = null;
+    return $miArray;
 }
 
 
