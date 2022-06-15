@@ -1,7 +1,7 @@
 <?php
 $servidor = "localhost";
 $baseDatos = "proyecto_integrado";
-$usuario = "root";
+$usuario = "phpmyadmin";
 $passw = "root";
 
 function insertaPeticion($nombre, $email, $pass, $mensaje)
