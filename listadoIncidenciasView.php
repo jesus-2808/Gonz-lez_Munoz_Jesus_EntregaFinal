@@ -164,7 +164,7 @@ if (isset($_SESSION["rol"])) {
 
         for ($i = 0; $i < count($incPdte); $i++) {
           echo "<tr><td>" . obtenerNombreUsuarioxId($incPdte[$i]["id_usuario"])["nombre"] . "</td> <td> <a href='detalleIncidencia.php?varId=" . $incPdte[$i]["id"] . "'>" . $incPdte[$i]["titulo"] . "</a></td><td>" . obtenerAula($incPdte[$i]["id_aula"])[0] . "</td><td>" . $incPdte[$i]["fecha_creacion"] . "</td>
-            <td>" . $incPdte[$i]["estado"] . "</td>  <td> <a href='cerrarIncidencia.php?variableId=" . $incPdte[$i]["id"] . "'>" . $mensaje . "</a></td>  </tr>";
+            <td>" . $incPdte[$i]["estado"] . "</td>  <td> <a type='button' class='btn btn-danger  btn-md btn-outline-light' href='cerrarIncidencia.php?variableId=" . $incPdte[$i]["id"] . "'>" . $mensaje . "</a></td>  </tr>";
         }
         ?>
       </tbody>
@@ -186,7 +186,6 @@ if (isset($_SESSION["rol"])) {
           <th>aula</th>
           <th>fecha_creacion</th>
           <th>fecha_modificacion</th>
-          <th>fecha_cierre</th>
           <th>estado</th>
           <th>modificar Inc.</th>
           <th>comentario</th>
@@ -201,8 +200,14 @@ if (isset($_SESSION["rol"])) {
         for ($i = 0; $i < count($datos); $i++) {
           $texto = "modificar";
           $msj = "insertar";
+          $fechaMod = "";
+          if ($datos[$i]["fecha_modificacion"] == "0000-00-00") {
+            $fechaMod = "no aplica";
+          } else {
+            $fechaMod = $datos[$i]["fecha_modificacion"];
+          }
           echo "<tr><td>" . obtenerNombreUsuarioxId($datos[$i]["id_usuario"])[0] . "</td> <td> <a href='detalleIncidencia.php?varId=" . $datos[$i]["id"] . "'>" . $datos[$i]["titulo"] . "</a></td><td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
-            <td>" . $datos[$i]["fecha_modificacion"] . "</td> <td>" . $datos[$i]["fecha_cierre"] . "</td>  <td>" . $datos[$i]["estado"] . "</td>  <td> <a href='modificarIncidencia.php?variableId=" . $datos[$i]["id"] . "'>" . $texto . "</a></td>  <td> <a href='insertaComentarioAdmin.php?sndVarId=" . $datos[$i]["id"] . "'>" . $msj . "</a></td> </tr>";
+            <td>" . $fechaMod . "</td> <td>" . $datos[$i]["estado"] . "</td>  <td> <a type='button' class='btn btn-primary btn-md btn-outline-light' href='modificarIncidencia.php?variableId=" . $datos[$i]["id"] . "'>" . $texto . "</a></td>  <td> <a type='button' class='btn btn-success  btn-md btn-outline-light' href='insertaComentarioAdmin.php?sndVarId=" . $datos[$i]["id"] . "'>" . $msj . "</a></td> </tr>";
         }
         ?>
       </tbody>
@@ -221,7 +226,6 @@ if (isset($_SESSION["rol"])) {
           <th>fecha_creacion</th>
           <th>fecha_modificacion</th>
           <th>fecha_cierre</th>
-          <th>estado</th>
         </tr>
       </thead>
       <tbody>
@@ -232,8 +236,14 @@ if (isset($_SESSION["rol"])) {
         for ($i = 0; $i < count($datos); $i++) {
           $texto = "modificar";
           $msj = "insertar";
+          $fechaMod = "";
+          if ($datos[$i]["fecha_modificacion"] == "0000-00-00") {
+            $fechaMod = "no aplica";
+          } else {
+            $fechaMod = $datos[$i]["fecha_modificacion"];
+          }
           echo "<tr><td>" . obtenerNombreUsuarioxId($datos[$i]["id_usuario"])[0] . "</td> <td> <a href='detalleIncidencia.php?varId=" . $datos[$i]["id"] . "'>" . $datos[$i]["titulo"] . "</a></td><td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
-      <td>" . $datos[$i]["fecha_modificacion"] . "</td> <td>" . $datos[$i]["fecha_cierre"] . "</td>    <td>" . $datos[$i]["estado"] . "</td> </tr>";
+      <td>" . $fechaMod . "</td> <td>" . $datos[$i]["fecha_cierre"] . "</td>   </tr>";
         }
         ?>
       </tbody>

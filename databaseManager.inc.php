@@ -1,7 +1,7 @@
 <?php
 $servidor = "localhost";
 $baseDatos = "proyecto_integrado";
-$usuario = "phpmyadmin";
+$usuario = "root";
 $passw = "root";
 
 function insertaPeticion($nombre, $email, $pass, $mensaje)
@@ -713,7 +713,29 @@ function obtenerIncidenciaXEstadoYAula($estado, $id_usuario, $id_aula){
     return $miArray;
 }
 
+function eliminarIncidencia($id)
+{
+    global $servidor, $baseDatos, $usuario, $passw;
+    $retorno = false;
+    try {
+        $con = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
+        $sql = $con->prepare("DELETE from incidencias where id=:id");
+        $sql->bindParam(":id", $id);
+        $sql->execute();
+        if ($sql->rowCount() > 0) {
+            $retorno = true;
+        }
+    } catch (\Throwable $th) {
+        $sql->execute();
+        if ($sql->rowCount() > 0) {
+            $retorno = true;
+        }
+    }
+    $con = null;
+    return $retorno;
+}
 
+eliminarIncidencia(15);
     /*
    ;
     

@@ -10,7 +10,7 @@ include "databaseManager.inc.php";
 use PHPMailer\PHPMailer\PHPMailer;
 
 
-function enviaMensaje($remitente, $destinatario, $asunto)
+function enviaMensaje($remitente, $password, $destinatario, $asunto)
 {
     require 'PHPMailer-master\src\PHPMailer.php';
     require 'PHPMailer-master\src\SMTP.php';
@@ -36,7 +36,7 @@ function enviaMensaje($remitente, $destinatario, $asunto)
     $mail->From = $remitente;
     $mail->FromName = "Jesus";
     $mail->Username   = $remitente;
-    $mail->Password   = '7BC8an55';
+    $mail->Password   = $password;
     $mail->SetFrom($remitente);
 
     $mail->AddReplyTo($destinatario);
@@ -81,7 +81,7 @@ if (count($_POST) > 0) {
   if ($cumplido == true) {
     $user = obtenerUsuarioxId($incidencia["id_usuario"]);
     foreach ($user as $fila) {
-        enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " .date("Y-m-d"));
+        enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['password'], $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " .date("Y-m-d"));
     }
       header("logadosView.php");
       

@@ -5,18 +5,23 @@
 
 include "databaseManager.inc.php";
 session_start();
-$id = $_GET["varId"];
+
+if (count($_GET) > 0) {
+    $id = $_GET["varId"];
+  } else {
+    $id = $_POST["id"];
+  }
+
 $incidencia = obtenerIncidencia($id);
 $id_aula = $incidencia["id_aula"];
 $nombreAula = obtenerAula($id_aula);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    @session_start();
     $comentario = $_POST["mensaje"];
     insertaComentario($comentario, $id, date("Y-m-d"), $_SESSION["id"]);
+    header("Location: listadoIncidenciasView.php");
 } else {
-    echo "el usuario o la contraseña no son correctos";
 }
 
 ?>
@@ -199,7 +204,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
 
-        
+
         <br>
         <br>
         <div class="row g-5">
@@ -248,16 +253,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             echo $nombreAula[0] ?></p>
                     <p>Fecha de creación :<?php echo $incidencia["fecha_creacion"] ?></p>
                     <p>Estado :<?php echo $incidencia["estado"] ?></p>
-
-                    <div class="form-group">
-                        <label for="validationMensaje">Inserta comentario:<span class="red">*</span></label>
-                        <textarea class="form-control" id="mensaje" name="mensaje" rows="2" min="20"></textarea>
-                    </div>
-                    <div class="form-group mb-10">
-                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
-                    </div>
+                    <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+                        <div class="form-group">
+                            <label for="validationMensaje">Inserta comentario:</label>  
+                            <input type="hidden" name="id" value="<?php echo $id; ?>">
+                            <textarea class="form-control" id="mensaje" name="mensaje" rows="2" min="20"></textarea>
+                        </div>
+                        <div class="form-group mb-10">
+                            <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
+                    </form>
                 </div>
             </div>
+        </div>
         </div>
     </section>
 

@@ -9,7 +9,7 @@ include "databaseManager.inc.php";
 
 
 @session_start();
-function enviarMensaje($remitente, $destinatario, $asunto)
+function enviarMensaje($remitente, $password, $destinatario, $asunto)
 {
   require 'PHPMailer-master\src\PHPMailer.php';
   require 'PHPMailer-master\src\SMTP.php';
@@ -33,9 +33,9 @@ function enviarMensaje($remitente, $destinatario, $asunto)
   );
 
   $mail->From = $remitente;
-  $mail->FromName = 'jesus.gonzalez.munoz.al@iespoligonosur.org';
+  $mail->FromName = $remitente;
   $mail->Username   = $remitente;
-  $mail->Password   = '7BC8an55';
+  $mail->Password   = $password;
   $mail->SetFrom($remitente);
 
   $mail->AddReplyTo($destinatario);
@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user = obtenerUsuarioxId($incidencia["id_usuario"]);
     foreach ($user as $fila) {
       if($fila["notificacionEmail"]==1){
-        enviarMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Modificada la incidencia: " . $id_2 . " con fecha " . date("Y-m-d"));
+        enviarMensaje($fila['nombre'], $fila['password'], $fila['mail'], "Modificada la incidencia: " . $id_2 . " con fecha " . date("Y-m-d"));
       } else {
         $error="Se ha actualizado el comentario, pero no se ha enviado mensaje ya que el usuario tiene desactivada esa opcion";
       }

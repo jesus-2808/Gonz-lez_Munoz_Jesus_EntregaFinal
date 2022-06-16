@@ -9,11 +9,8 @@ require 'PHPMailer-master\src\Exception.php';
 
 include "databaseManager.inc.php";
 @session_start();
-function enviaMensaje($remitente, $destinatario, $asunto)
+function enviaMensaje($remitente, $pass, $destinatario, $asunto)
 {
-
-
-
 
     $mail = new PHPMailer();
 
@@ -33,9 +30,9 @@ function enviaMensaje($remitente, $destinatario, $asunto)
     );
 
     $mail->From = $remitente;
-    $mail->FromName = 'jesus.gonzalez.munoz.al@iespoligonosur.org';
+    $mail->FromName = $remitente;
     $mail->Username   = $remitente;
-    $mail->Password   = '7BC8an55';
+    $mail->Password   = $pass;
     $mail->SetFrom($remitente);
     $mail->AddReplyTo($destinatario);
     $mail->Subject    =  $asunto;
@@ -71,21 +68,22 @@ if (count($_POST) > 0) {
     if ($estadoModif != "resuelto") {
         modificarIncidencia($id, $incidencia["id_usuario"], $_POST["titulo"], $incidencia["id_aula"], date("Y-m-d"), $estadoModif);
         $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+        
         foreach ($user as $fila) {
             if ($fila['notificacionEmail'] == 1) {
-                enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " . date("Y-m-d"));
+                enviaMensaje( 'jesus.gonzalez.munoz.al@iespoligonosur.org',$fila['password'], $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " . date("Y-m-d"));
             } else {
                 echo '<script language="javascript">swal("El creador de la incidencia no desea recibir notificaciones por correo");</script>';
             }
         }
-
         header("Location: listadoIncidenciasView.php");
     } else if ($estadoModif == "resuelto") {
         cambiarEstado(date("Y-m-d"), $estadoModif, $id);
         $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+        
         foreach ($user as $fila) {
 
-            enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Cerrada: " . $id . " con fecha " . date("Y-m-d"));
+            enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['password'],$fila['mail'], "Cerrada: " . $id . " con fecha " . date("Y-m-d"));
         }
 
         header("Location: listadoIncidenciasView.php");
@@ -290,6 +288,7 @@ if (count($_POST) > 0) {
 
                 </ul>
             </div>
+            
             <div class=" col-md-7 col-lg-8">
                 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
 
@@ -324,7 +323,7 @@ if (count($_POST) > 0) {
                     </div>
                     <br>
                 </form>
-
+               
             </div>
         </div>
     </section>

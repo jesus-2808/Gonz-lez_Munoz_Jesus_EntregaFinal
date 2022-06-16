@@ -20,8 +20,8 @@ if (count($_POST) > 0) {
             if ($_SESSION["rol"] != "administrador") {
                 header("Location: logadosView.php");
             } else {
-                header("Location: listadoIncidenciasView.php");
-                exit();
+                header("Location: administracionView.php");
+                
             }
         } else {
             echo "error en la sesion";
@@ -170,8 +170,8 @@ if (count($_POST) > 0) {
                     menuUsuario();
                 } else {
                     menuAdmin();
-                    header("Location: listadoIncidenciasView.php");
-                    exit();
+                    
+                    
                 }
             } else {
                 echo "error en la sesion";

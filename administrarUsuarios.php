@@ -155,8 +155,8 @@
                 $elimina = "eliminar";
                 for ($i = 0; $i < count($datos); $i++) {
                     echo "<tr><td>" . $datos[$i]["id"] . "</td> <td>" . $datos[$i]["nombre"] . "</td>  <td>" . $datos[$i]["mail"] . "</td> 
-                    <td> <a href='modificarUsuario.php?variableId=" . $datos[$i]["id"] . "'>" . $mensaje . "</a></td>
-                    <td> <a href='eliminarUsuario.php?variableId=" . $datos[$i]["id"] . "'>" . $elimina . "</a></td></tr>";
+                    <td> <a type='button' class='btn btn-success  btn-md btn-outline-light' href='modificarUsuario.php?variableId=" . $datos[$i]["id"] . "'>" . $mensaje . "</a></td>
+                    <td> <a type='button' class= 'btn btn-danger  btn-md btn-outline-light' href='eliminarUsuario.php?variableId=" . $datos[$i]["id"] . "'>" . $elimina . "</a></td></tr>";
                 }
                 ?>
             </tbody>

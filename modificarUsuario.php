@@ -17,7 +17,7 @@ if (count($_POST) > 0) {
 
 
 
-    $cumplido = modificarUsuario($id, $_POST["nombre"], $_POST["rol"], $_POST["mail"], $_POST["validar"]);
+    $cumplido = modificarUsuario($id, $_POST["nombre"], $_POST["rol"], $_POST["mail"], 1);
     if ($cumplido == true) {
         header("Location: administrarUsuarios.php");
         exit();
@@ -243,19 +243,7 @@ if (count($_POST) > 0) {
                         <label for="nombre">Mail del usuario</label>
                         <input type="text" class="form-control" name="mail" value='<?php echo $user["mail"]; ?>' aria-describedby="rol" placeholder='<?php echo $user["mail"]; ?>'>
 
-                    </div>
-
-                    <div class=form-group>
-                        <label for="validar">validar</label>
-                        <input type="radio" name="validar" id="validar" value="1" <?php if ($user["validacionEmail"] == 1) {
-                                                                                        echo "checked";
-                                                                                    } ?>> True
-                        <input type="radio" name="validar" id="validar" value="0" <?php if ($user["validacionEmail"] == 0) {
-                                                                                        echo "checked";
-                                                                                    } ?>> False
-                        <br>
-
-                    </div>
+    </div>
 
 
                     <div class="form-group mb-10">

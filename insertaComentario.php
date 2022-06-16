@@ -3,17 +3,62 @@
 
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+
+require 'PHPMailer-master\src\PHPMailer.php';
+require 'PHPMailer-master\src\SMTP.php';
+require 'PHPMailer-master\src\Exception.php';
+
 include "databaseManager.inc.php";
-
-
 @session_start();
+function enviaMensaje($remitente, $destinatario, $asunto)
+{
+
+    $mail = new PHPMailer();
+
+    $body = $_POST["titulo"];
+
+    $mail->IsSMTP();
+    $mail->Host = "smtp.gmail.com";
+    $mail->SMTPSecure = 'tls';
+    $mail->SMTPAuth = true;
+    $mail->Port = 587;
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+
+    $mail->From = $remitente;
+    $mail->FromName = 'jesus.gonzalez.munoz.al@iespoligonosur.org';
+    $mail->Username   = $remitente;
+    $mail->Password   = '7BC8an55';
+    $mail->SetFrom($remitente);
+    $mail->AddReplyTo($destinatario);
+    $mail->Subject    =  $asunto;
+
+
+    $mail->MsgHTML($body);
+    $mail->IsHTML(true);
+
+
+    $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
+    if (!$mail->Send()) {
+        echo "Mailer Error: " . $mail->ErrorInfo;
+    } else {
+        echo "Message has been sent";
+    }
+}
+
 
 if (count($_GET) > 0) {
   $id_2 = $_GET["sndVarId"];
- 
+  $incidencia = obtenerIncidencia($id_2);
 } else {
   $id_2 = $_POST["id"];
-
+  $incidencia = obtenerIncidencia($id_2);
 }
 $error = '';
 
@@ -23,17 +68,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $comentario = $_POST["mensaje"];
   $cumplido=insertaComentario($comentario, $id_2, date("Y-m-d"), $_SESSION["id"]);
   if($cumplido==true){
-    $user=obtenerUsuarioxId($id); 
-    $destinatario=$user["mail"];
-    $asunto=$_POST["titulo"];
-    $message="cambio en el estado de la incidencia";
-    mail($destinatario, $asunto, $message );
+    $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+    foreach ($user as $fila) {
+        if ($fila['notificacionEmail'] == 1) {
+            enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Modificada la incidencia: " . $id2 . " con fecha " . date("Y-m-d"));
+        } else {
+            echo '<script language="javascript">swal("El creador de la incidencia no desea recibir notificaciones por correo");</script>';
+        }
     header("Location: logadosView.php");
   }
   } else {
-  echo "el usuario o la contraseña no son correctos";
+  echo "no se ha podido completar la peticion";
   }
-
+} else{
+  echo '<script language="javascript">alert("Error en la petición");</script>';
+}
 
 
 

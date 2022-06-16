@@ -273,7 +273,7 @@ if (isset($_SESSION["rol"])) {
 
                     echo "<td>";
 
-                    echo "<a href='validarUsuario.php?varId=" . $fila["id"] . "'>";
+                    echo "<a type='button' class='btn btn-success  btn-md btn-outline-light' href='validarUsuario.php?varId=" . $fila["id"] . "'>";
                     echo "validar";
                     echo "</a>";
                     echo "</td>";
