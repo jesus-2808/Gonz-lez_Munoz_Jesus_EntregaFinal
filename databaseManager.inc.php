@@ -284,15 +284,14 @@ function obtenerIncidenciaxUsuario($id_usuario)
     return $miArray;
 }
 
-function editarComentario($id, $contenido, $id_incidencia, $fecha_modificacion, $id_usuario)
+function editarComentario($id, $contenido, $fecha_modificacion, $id_usuario)
 {
     $retorno = false;
     try {
         $con = new PDO("mysql:host=" . $GLOBALS['servidor'] . ";dbname=" . $GLOBALS['baseDatos'], $GLOBALS['usuario'], $GLOBALS['passw']);
-        $sql = $con->prepare("UPDATE comentarios  set contenido=:contenido , id_incidencia=:id_incidencia, fecha_modificacion=:fecha_modificacion, id_usuario=:id_usuario where id=:id;");
+        $sql = $con->prepare("UPDATE comentarios  set contenido=:contenido , fecha_modificacion=:fecha_modificacion, id_usuario=:id_usuario where id=:id;");
         $sql->bindParam(":id", $id);
         $sql->bindParam(":contenido", $contenido);
-        $sql->bindParam(":id_incidencia", $id_incidencia);
         $sql->bindParam(":fecha_modificacion", $fecha_modificacion);
         $sql->bindParam(":id_usuario", $id_usuario);
        
@@ -478,7 +477,6 @@ function eliminarUsuario($id){
 function obtenerNombreUsuarioxId($id){
     global $servidor, $baseDatos, $usuario, $passw;
 
-    global $servidor, $baseDatos, $usuario, $passw;
     try {
         $conexion = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
         $sql = $conexion->prepare("SELECT nombre from usuarios where id=:id");
@@ -735,11 +733,23 @@ function eliminarIncidencia($id)
     return $retorno;
 }
 
-eliminarIncidencia(15);
-    /*
-   ;
-    
-       $contraseña= password_hash("12345", PASSWORD_DEFAULT);
-        updatePassword("ramon_299", $contraseña);
+function obtenerIncidenciaxComentario($id)
+{
+    global $servidor, $baseDatos, $usuario, $passw;
+    try {
+        $conexion = new PDO("mysql:host=$servidor;dbname=$baseDatos", $usuario, $passw);
 
-    */
+        $sql = $conexion->prepare("SELECT id_incidencia from comentarios where id=:id");
+        $sql->bindParam(":id", $id);
+       
+        $sql->execute();
+
+        return $sql->fetch();
+    } catch (PDOException $e) {
+        echo $e;
+        echo "ha fallao";
+    }
+
+}
+editarComentario(9, "prueba", date("Y-m-d"), 11);
+

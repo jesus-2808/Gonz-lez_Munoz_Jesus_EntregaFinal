@@ -3,16 +3,18 @@
 
 <?php
 
+include "databaseManager.inc.php";
+
+
+@session_start();
 use PHPMailer\PHPMailer\PHPMailer;
 
-require 'PHPMailer-master\src\PHPMailer.php';
-require 'PHPMailer-master\src\SMTP.php';
-require 'PHPMailer-master\src\Exception.php';
 
-include "databaseManager.inc.php";
-@session_start();
-function enviaMensaje($remitente, $destinatario, $asunto)
+function enviaMensaje($remitente, $password, $destinatario, $asunto)
 {
+    require 'PHPMailer-master\src\PHPMailer.php';
+    require 'PHPMailer-master\src\SMTP.php';
+    require 'PHPMailer-master\src\Exception.php';
 
     $mail = new PHPMailer();
 
@@ -32,10 +34,11 @@ function enviaMensaje($remitente, $destinatario, $asunto)
     );
 
     $mail->From = $remitente;
-    $mail->FromName = 'jesus.gonzalez.munoz.al@iespoligonosur.org';
+    $mail->FromName = "User";
     $mail->Username   = $remitente;
-    $mail->Password   = 'aixa_4292';
+    $mail->Password   = $password;
     $mail->SetFrom($remitente);
+
     $mail->AddReplyTo($destinatario);
     $mail->Subject    =  $asunto;
 
@@ -52,35 +55,43 @@ function enviaMensaje($remitente, $destinatario, $asunto)
     }
 }
 
-
 if (count($_GET) > 0) {
-  $id_2 = $_GET["sndVarId"];
-  $incidencia = obtenerIncidencia($id_2);
+  $id_inc = $_GET["varId"];
+ $comentario=obtenerComentarioxIncidencia($id_inc);
+ $incidencia=obtenerIncidencia($id_inc);
+
 } else {
-  $id_2 = $_POST["id"];
-  $incidencia = obtenerIncidencia($id_2);
+  $id_inc = $_POST["id_inc"];
+ 
+  $comentario = obtenerComentarioxIncidencia($id_inc);
 }
 $error = '';
+if (count($_POST) > 0) {
+  function seguro($valor)
+  {
+      $valor = strip_tags($valor);
+      $valor = stripslashes($valor);
+      $valor = htmlspecialchars($valor);
+      return $valor;
+  }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-  @session_start();
-  $comentario = $_POST["mensaje"];
-  $cumplido=insertaComentario($comentario, $id_2, date("Y-m-d"), $_SESSION["id"]);
-  if($cumplido==true){
+  $cumplido = editarComentario($_POST["id"],  $_POST["mensaje"], $_POST["id_inc"], date("Y-m-d"), $_SESSION["id"]);
+ 
+  if ($cumplido == true) {
     $user = obtenerUsuarioxId($incidencia["id_usuario"]);
     foreach ($user as $fila) {
-        if ($fila['notificacionEmail'] == 1) {
-            enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Modificada la incidencia: " . $id2 . " con fecha " . date("Y-m-d"));
-        } else {
-          echo '<script language="javascript">alert("El usuario no desea recibir notificaciones");</script>';
-        }
-    header("Location: logadosView.php");
-  }
+        enviaMensaje($fila["nombre"], $fila['password'], $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " .date("Y-m-d"));
+    }
+      header("logadosView.php");
+      
   } else {
-  echo "no se ha podido completar la peticion";
+      $error = "Datos incorrectos o no se ha actualizado nada";
   }
-} 
+}
+
+
+
 
 
 
@@ -203,6 +214,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
 
       <div id="breadcrumbs">
+                <a title="cerrar sesion." href="cerrarSesion.php" class="home">Cerrar sesion</a>
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
+            </div>
+
+      <div id="breadcrumbs">
 
         <a title="ver listado incidencias." href="logadosView.php" class="home">Volver a tu perfil</a>
 
@@ -250,62 +270,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
       <div class=" col-md-7 col-lg-8">
 
-        <h2 class="dc-mega">Inserta tu comentario de la incidencia <?php echo $id_2 ?> </h2>
+        <h2 class="dc-mega">Modifica los comentarios de la incidencia <?php echo $id_inc ?> </h2>
+    <?php
+       echo "<h3>TUS COMENTARIOS</h3>";
+       $lista = obtenerComentarioxIncidencia($id_inc);
 
-        <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
-        <input type="hidden" name="id" value="<?php echo $id_2; ?>">
-          <div class="form-group">
-            <label for="validationMensaje">Inserta comentario:<span class="red">*</span></label>
-            <textarea class="form-control" id="mensaje" name="mensaje" rows="2" min="20"></textarea>
-          </div>
-          <div class="form-group mb-10">
-            <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
-          </div>
+       echo "<table class='container-fluid '>";
+       echo "<th>", "contenido", "</th>";
+       echo "<th>", "nº incidencia", "</th>";
+       echo "<th>", "Fecha de creación", "</th>";
+       echo "<th>", "modificar", "</th>";
 
+       
+       foreach ($lista as $fila) {
+            
+        echo "<tr class='mr-2 ml-2'>";
+
+        echo "<td class='mr-2 ml-2'>";
+
+        
+
+        echo $fila['contenido'];
+
+        echo "</td>";
+
+        echo "<td>";
+
+        echo $fila['id_incidencia'];
+
+        echo "</td>";
+
+
+        echo "<td>";
+
+        echo $fila['fecha_modificacion'];
+
+        echo "</td>";
+        echo "<td>";
+
+        echo "<a type='button' class='btn btn-success  btn-md btn-outline-light' href='modificaComentario.php?variableId=" . $fila['id']. "'>" . "modificar" . "</a></td>";
+
+        echo "</td>";
+      echo "</tr>";
+    }  
+        echo "</table>";
+     
+        ?>
+      
+       <?php
+       
+      
+
+    ?>
+     
       </div>
 
 
   </section>
   <br>
 
-  <section id="footer" class="footer-divider bg-secondary">
-    <div class="container">
-      <div id="footer-widgets" class="row clearfix">
-
-        <div class="col-sm-6">
-          <section id="text-5" class="widget widget_text clearfix">
-            <div class="textwidget">
-              <p><img class="alignnone wp-image-5415 size-full" src="https://iespoligonosur.org/www/wp-content/uploads/2021/06/sellosweb.png" alt="" width="1024" height="125"></p>
-            </div>
-          </section>
-        </div>
-
-
-
-        <section class="fw-row asset-bg ">
-          <div class="container-fluid">
-            <div class="row-fluid">
-              <div class="spb_gmaps_widget spb_content_element 150px">
-                <div class="spb_wrapper">
-                  <div class="spb_map_wrapper">
-                    <div class="map-canvas" style="width:100%;height:100px;" data-address="Esclava del señor 2 41013 sevilla" data-zoom="14" data-maptype="roadmap" data-mapcolor="" data-mapsaturation="mono" data-pinimage="" data-pinlink=""></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section class="container">
-          <div class="row">
-            <div class="spb_content_element col-sm-12 spb_text_column">
-              <div class="spb_wrapper clearfix">
-
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-  </section>
+  
   </div>
 
 

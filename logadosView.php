@@ -231,10 +231,7 @@ session_start();
                             <p><a href="seleccionaNotificaciones.php">Pincha aquí para configurar tus preferencias de notificaciones</a></p>
 
                     <?php
-                            echo "<ul class='texto_2'> TU PERFIL </ul>";
-                            echo "<li> nombre : $nombre </li>";
-                            echo "<li> mail : $mail </li>";
-                            echo "<li> rol de usuario : $rol </li>";
+                          
                             if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $estado = $_POST["estado"];
                                 $aulas= $_POST["aula"];
@@ -250,8 +247,8 @@ session_start();
 
                                         echo "<th>", "Fecha de creación", "</th>";
                                         echo "<th>", "Estado", "</th>";
-                                        echo "<th>", "Comentario", "</th>";
-                                        echo "<th>", "Comentario", "</th>";
+                                        echo "<th>", "Nuevo comentario", "</th>";
+                                        echo "<th>", "Histórico", "</th>";
                                     } else {
                                         echo "<table class='container-fluid '>";
                                         echo "<th>", "Descripción", "</th>";
@@ -300,8 +297,8 @@ session_start();
                                             echo "</a>";
                                             echo "</td>";
                                             echo "<td>";
-                                            echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
-                                            echo "Modificar";
+                                            echo "<a href='historicoComentarios.php?varId=" . $fila["id"] . "'>";
+                                            echo "Ver";
                                             echo "</a>";
                                             echo "</td>";
                                         } else {
@@ -322,8 +319,8 @@ session_start();
     
                                     echo "<th>", "Fecha de creación", "</th>";
                                     echo "<th>", "Estado", "</th>";
-                                    echo "<th>", "Comentario", "</th>";
-                                    echo "<th>", "Comentario", "</th>";
+                                    echo "<th>", "Nuevo comentario", "</th>";
+                                    echo "<th>", "Histórico", "</th>";
                                     echo "<th>", "Cerrar", "</th>";
     
     
@@ -365,8 +362,8 @@ session_start();
                                             echo "</a>";
                                             echo "</td>";
                                             echo "<td>";
-                                            echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
-                                            echo "Modificar";
+                                            echo "<a href='historicoComentarios.php?varId=" . $fila["id"] . "'>";
+                                            echo "Ver";
                                             echo "</a>";
                                             echo "</td>";
                                             echo "<td>";
@@ -412,8 +409,8 @@ session_start();
     
                                     echo "<th>", "Fecha de creación", "</th>";
                                     echo "<th>", "Estado", "</th>";
-                                    echo "<th>", "Comentario", "</th>";
-                                    echo "<th>", "Comentario", "</th>";
+                                    echo "<th>", "Nuevo comentario", "</th>";
+                                    echo "<th>", "Histórico", "</th>";
                                     echo "<th>", "Cerrar", "</th>";
     
     
@@ -455,8 +452,8 @@ session_start();
                                             echo "</a>";
                                             echo "</td>";
                                             echo "<td>";
-                                            echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
-                                            echo "Modificar";
+                                            echo "<a href='historicoComentarios.php?varId=" . $fila["id"] . "'>";
+                                            echo "Ver";
                                             echo "</a>";
                                             echo "</td>";
                                             echo "<td>";
@@ -502,8 +499,8 @@ session_start();
 
                                 echo "<th>", "Fecha de creación", "</th>";
                                 echo "<th>", "Estado", "</th>";
-                                echo "<th>", "Comentario", "</th>";
-                                echo "<th>", "Comentario", "</th>";
+                                echo "<th>", "Nuevo comentario", "</th>";
+                                echo "<th>", "Histórico", "</th>";
                                 echo "<th>", "Cerrar", "</th>";
 
 
@@ -545,8 +542,8 @@ session_start();
                                         echo "</a>";
                                         echo "</td>";
                                         echo "<td>";
-                                        echo "<a href='modificaComentario.php?varId=" . $fila["id"] . "'>";
-                                        echo "Modificar";
+                                        echo "<a href='historicoComentarios.php?varId=" . $fila["id"] . "'>";
+                                        echo "Ver";
                                         echo "</a>";
                                         echo "</td>";
                                         echo "<td>";
