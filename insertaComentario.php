@@ -11,51 +11,52 @@ require 'PHPMailer-master\src\Exception.php';
 
 include "databaseManager.inc.php";
 @session_start();
-function enviaMensaje($remitente, $destinatario, $asunto)
+function enviandoMensaje($remitente, $pass, $destinatario, $asunto)
 {
 
-    $mail = new PHPMailer();
+  $mail = new PHPMailer();
 
-    $body = $_POST["titulo"];
+  $body = 'insertado comentario';
 
-    $mail->IsSMTP();
-    $mail->Host = "smtp.gmail.com";
-    $mail->SMTPSecure = 'tls';
-    $mail->SMTPAuth = true;
-    $mail->Port = 587;
-    $mail->SMTPOptions = array(
-        'ssl' => array(
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-            'allow_self_signed' => true
-        )
-    );
+  $mail->IsSMTP();
+  $mail->Host = "smtp.gmail.com";
+  $mail->SMTPSecure = 'tls';
+  $mail->SMTPAuth = true;
+  $mail->Port = 587;
+  $mail->SMTPOptions = array(
+      'ssl' => array(
+          'verify_peer' => false,
+          'verify_peer_name' => false,
+          'allow_self_signed' => true
+      )
+  );
 
-    $mail->From = $remitente;
-    $mail->FromName = 'jesus.gonzalez.munoz.al@iespoligonosur.org';
-    $mail->Username   = $remitente;
-    $mail->Password   = 'aixa_4292';
-    $mail->SetFrom($remitente);
-    $mail->AddReplyTo($destinatario);
-    $mail->Subject    =  $asunto;
-
-
-    $mail->MsgHTML($body);
-    $mail->IsHTML(true);
+  $mail->From = $remitente;
+  $mail->FromName = $remitente;
+  $mail->Username   = $remitente;
+  $mail->Password   = $pass;
+  $mail->SetFrom($remitente);
+  $mail->AddReplyTo($destinatario);
+  $mail->Subject    =  $asunto;
 
 
-    $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
-    if (!$mail->Send()) {
-        echo "Mailer Error: " . $mail->ErrorInfo;
-    } else {
-        echo "Message has been sent";
-    }
+  $mail->MsgHTML($body);
+  $mail->IsHTML(true);
+
+
+  $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
+  if (!$mail->Send()) {
+      echo "Mailer Error: " . $mail->ErrorInfo;
+  } else {
+      echo "Message has been sent";
+  }
 }
 
 
 if (count($_GET) > 0) {
   $id_2 = $_GET["sndVarId"];
   $incidencia = obtenerIncidencia($id_2);
+  
 } else {
   $id_2 = $_POST["id"];
   $incidencia = obtenerIncidencia($id_2);
@@ -69,9 +70,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $cumplido=insertaComentario($comentario, $id_2, date("Y-m-d"), $_SESSION["id"]);
   if($cumplido==true){
     $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+    var_dump($user);
     foreach ($user as $fila) {
         if ($fila['notificacionEmail'] == 1) {
-            enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['mail'], "Modificada la incidencia: " . $id2 . " con fecha " . date("Y-m-d"));
+            enviandoMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org','aixa_4292', $fila['mail'], "Modificada la incidencia: " . $id2 . " con fecha " . date("Y-m-d"));
         } else {
           echo '<script language="javascript">alert("El usuario no desea recibir notificaciones");</script>';
         }
@@ -255,7 +257,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
         <input type="hidden" name="id" value="<?php echo $id_2; ?>">
           <div class="form-group">
-            <label for="validationMensaje">Inserta comentario:<span class="red">*</span></label>
+            <label for="validationMensaje">edita comentario:<span class="red">*</span></label>
             <textarea class="form-control" id="mensaje" name="mensaje" rows="2" min="20"></textarea>
           </div>
           <div class="form-group mb-10">

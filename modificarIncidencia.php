@@ -71,7 +71,7 @@ if (count($_POST) > 0) {
         
         foreach ($user as $fila) {
             if ($fila['notificacionEmail'] == 1) {
-                enviaMensaje($fila['nombre'],$fila['password'], $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " . date("Y-m-d"));
+                enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org','aixa_4292', $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " . date("Y-m-d"));
             } else {
                 echo '<script language="javascript">swal("El creador de la incidencia no desea recibir notificaciones por correo");</script>';
             }
@@ -83,7 +83,7 @@ if (count($_POST) > 0) {
         
         foreach ($user as $fila) {
 
-            enviaMensaje($fila['nombre'], $fila['password'],$fila['mail'], "Cerrada: " . $id . " con fecha " . date("Y-m-d"));
+            enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org','aixa_4292',$fila['mail'], "Cerrada: " . $id . " con fecha " . date("Y-m-d"));
         }
 
         header("Location: listadoIncidenciasView.php");

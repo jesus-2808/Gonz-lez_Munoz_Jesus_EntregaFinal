@@ -1,7 +1,55 @@
 <!DOCTYPE html>
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+
+require 'PHPMailer-master\src\PHPMailer.php';
+require 'PHPMailer-master\src\SMTP.php';
+require 'PHPMailer-master\src\Exception.php';
+
 include "databaseManager.inc.php";
+
+
+function sendMessage($remitente, $pass, $destinatario, $asunto)
+{
+
+  $mail = new PHPMailer();
+
+  $body = 'Ya has sido validado como usuario. Bienvenido al portal de incidencias del IES Polígono Sur';
+
+  $mail->IsSMTP();
+  $mail->Host = "smtp.gmail.com";
+  $mail->SMTPSecure = 'tls';
+  $mail->SMTPAuth = true;
+  $mail->Port = 587;
+  $mail->SMTPOptions = array(
+      'ssl' => array(
+          'verify_peer' => false,
+          'verify_peer_name' => false,
+          'allow_self_signed' => true
+      )
+  );
+
+  $mail->From = $remitente;
+  $mail->FromName = $remitente;
+  $mail->Username   = $remitente;
+  $mail->Password   = $pass;
+  $mail->SetFrom($remitente);
+  $mail->AddReplyTo($destinatario);
+  $mail->Subject    =  $asunto;
+
+
+  $mail->MsgHTML($body);
+  $mail->IsHTML(true);
+
+
+  $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
+  if (!$mail->Send()) {
+      echo "Mailer Error: " . $mail->ErrorInfo;
+  } else {
+      echo "Message has been sent";
+  }
+}
 
 $id = $_GET["varId"];
 $nuevoUser = obtenerPeticion($id);
@@ -12,6 +60,7 @@ if (!$cumplido) {
 } else {
 
     insertarUsuarioRegistrado($nuevoUser['nombre'], $nuevoUser['password'], 'usuarioRegistrado', $nuevoUser['email'], 1, 1);
+    sendMessage('jesus.gonzalez.munoz.al@iespoligonosur.org', 'aixa_4292', $nuevoUser['email'], 'usuario validado');
 }
 
 ?>

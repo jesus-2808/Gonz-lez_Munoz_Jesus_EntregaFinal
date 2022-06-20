@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user = obtenerUsuarioxId($incidencia["id_usuario"]);
     foreach ($user as $fila) {
       if($fila["notificacionEmail"]==1){
-        enviarMensaje($fila['nombre'], $fila['password'], $fila['mail'], "Modificada la incidencia: " . $id_2 . " con fecha " . date("Y-m-d"));
+        enviarMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org','aixa_4292', $fila['mail'], "Modificada la incidencia: " . $id_2 . " con fecha " . date("Y-m-d"));
       } else {
         $error="Se ha actualizado el comentario, pero no se ha enviado mensaje ya que el usuario tiene desactivada esa opcion";
       }
