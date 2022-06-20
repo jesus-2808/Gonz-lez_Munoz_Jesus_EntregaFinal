@@ -71,7 +71,7 @@ if (count($_POST) > 0) {
         
         foreach ($user as $fila) {
             if ($fila['notificacionEmail'] == 1) {
-                enviaMensaje( 'jesus.gonzalez.munoz.al@iespoligonosur.org',$fila['password'], $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " . date("Y-m-d"));
+                enviaMensaje($fila['nombre'],$fila['password'], $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " . date("Y-m-d"));
             } else {
                 echo '<script language="javascript">swal("El creador de la incidencia no desea recibir notificaciones por correo");</script>';
             }
@@ -83,7 +83,7 @@ if (count($_POST) > 0) {
         
         foreach ($user as $fila) {
 
-            enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', $fila['password'],$fila['mail'], "Cerrada: " . $id . " con fecha " . date("Y-m-d"));
+            enviaMensaje($fila['nombre'], $fila['password'],$fila['mail'], "Cerrada: " . $id . " con fecha " . date("Y-m-d"));
         }
 
         header("Location: listadoIncidenciasView.php");
@@ -303,6 +303,9 @@ if (count($_POST) > 0) {
 
                     <div class=form-group>
                         <label for="validar">Seleccionar estado</label>
+                        <input type="radio" name="nuevo" id="nuevo" value="nuevo" <?php if ($estado == "nuevo") {
+                                                                                                    echo "checked";
+                                                                                                } ?>> nuevo
                         <input type="radio" name="estado" id="en_progreso" value="en progreso" <?php if ($estado == "en progreso") {
                                                                                                     echo "checked";
                                                                                                 } ?>> En progreso

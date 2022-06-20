@@ -132,35 +132,17 @@ solicitudCierre(1, $id);
             </div>
 
             <div id="breadcrumbs">
-
-
-                <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
+                <a title="cerrar sesion." href="cerrarSesion.php" class="home">Cerrar sesion</a>
             </div>
 
             <div id="breadcrumbs">
 
-
-                <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+                <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
             </div>
-
             <div id="breadcrumbs">
-
-                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
-
+                <a title="Tu perfil." href="logadosView.php" class="home">Tu perfil</a>
             </div>
-
-            <div id="breadcrumbs">
-
-                <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
-
-
-            </div>
-
-            <div id="breadcrumbs">
-
-                <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
-
-            </div>
+           
 
         </div>
         </div>

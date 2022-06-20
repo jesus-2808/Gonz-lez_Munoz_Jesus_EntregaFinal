@@ -610,7 +610,8 @@ session_start();
                             <select name="aula">
                             
                                 <?php $lista = obtenerAulas();
-
+                                 echo '<option value=""> </option>';
+                                 
                                 foreach ($lista as $fila) {
 
                                     echo '<option value="' . $fila["id_aula"] . '">';

@@ -181,11 +181,11 @@ if (isset($_SESSION["rol"])) {
       <thead>
         <tr>
 
-          <th>n_usuario</th>
+          <th>creador</th>
           <th>título</th>
           <th>aula</th>
-          <th>fecha_creacion</th>
-          <th>fecha_modificacion</th>
+          <th>fecha creacion</th>
+          <th>fecha modificacion</th>
           <th>estado</th>
           <th>modificar Inc.</th>
           <th>comentario</th>
@@ -220,12 +220,12 @@ if (isset($_SESSION["rol"])) {
       <thead>
         <tr>
 
-          <th>n_usuario</th>
+          <th>creador</th>
           <th>título</th>
           <th>aula</th>
-          <th>fecha_creacion</th>
-          <th>fecha_modificacion</th>
-          <th>fecha_cierre</th>
+          <th>fecha creacion</th>
+          <th>fecha modificacion</th>
+          <th>fecha cierre</th>
         </tr>
       </thead>
       <tbody>

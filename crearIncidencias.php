@@ -20,7 +20,7 @@ if (count($_POST) > 0) {
             if ($_SESSION["rol"] != "administrador") {
                 header("Location: logadosView.php");
             } else {
-                header("Location: administracionView.php");
+                header("Location: listadoIncidenciasView.php");
                 
             }
         } else {
@@ -171,7 +171,6 @@ if (count($_POST) > 0) {
                 } else {
                     menuAdmin();
                     
-                    
                 }
             } else {
                 echo "error en la sesion";
@@ -193,6 +192,11 @@ if (count($_POST) > 0) {
             function menuAdmin()
             {
 
+                echo " <div id='breadcrumbs'>";
+                echo " <a title='cerrar Sesion.' href='cerrarSesion.php' class='home'>Cerrar sesion</a>";
+
+                echo " </div>";
+                
                 echo " <div id='breadcrumbs'>";
                 echo " <a title='ver listado incidencias.' href='listadoIncidenciasView.php' class='home'>Listado de incidencias</a>";
 

@@ -120,7 +120,7 @@
       <thead>
         <tr>
          
-         
+        <th>creador</th>
           <th>título</th>
           <th>aula</th>
           <th>fecha_creacion</th>
@@ -138,8 +138,14 @@
         for ($i = 0; $i < count($datos); $i++) {
           $texto="modificar";
           $msj="insertar";
-          echo "<tr><td>" . $datos[$i]["titulo"] . "</td> <td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
-          <td>" . $datos[$i]["fecha_modificacion"] . "</td>   <td>" . $datos[$i]["estado"] . "</td>  </tr>";
+          $fechaMod = "";
+          if ($datos[$i]["fecha_modificacion"] == "0000-00-00") {
+            $fechaMod = "no aplica";
+          } else {
+            $fechaMod = $datos[$i]["fecha_modificacion"];
+          }
+          echo "<tr><td>" . obtenerNombreUsuarioxId($datos[$i]["id_usuario"])[0] . "</td> <td>" . $datos[$i]["titulo"] . "</td> <td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
+          <td>" .$fechaMod . "</td>   <td>" . $datos[$i]["estado"] . "</td>  </tr>";
  
             
         }
@@ -155,7 +161,7 @@
   <thead>
     <tr>
 
-      <th>n_usuario</th>
+      <th>creador</th>
       <th>título</th>
       <th>aula</th>
       <th>fecha_creacion</th>
@@ -172,8 +178,14 @@
     for ($i = 0; $i < count($datos); $i++) {
       $texto = "modificar";
       $msj = "insertar";
-      echo "<tr><td>" . obtenerNombreUsuarioxId($datos[$i]["id_usuario"])[0] . "</td> <td> <a href='detalleIncidencia.php?varId=" . $datos[$i]["id"] . "'>" . $datos[$i]["titulo"] . "</a></td><td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
-  <td>" . $datos[$i]["fecha_modificacion"] . "</td> <td>" . $datos[$i]["fecha_cierre"] . "</td>    <td>" . $datos[$i]["estado"] . "</td> </tr>";
+      $fechaMod = "";
+      if ($datos[$i]["fecha_modificacion"] == "0000-00-00") {
+        $fechaMod = "no aplica";
+      } else {
+        $fechaMod = $datos[$i]["fecha_modificacion"];
+      }
+      echo "<tr><td>" . obtenerNombreUsuarioxId($datos[$i]["id_usuario"])[0] . "</td> <td>" . $datos[$i]["titulo"] . "<td>" . obtenerAula($datos[$i]["id_aula"])[0]  . "</td><td>" . $datos[$i]["fecha_creacion"] . "</td>
+  <td>" . $fechaMod . "</td> <td>" . $datos[$i]["fecha_cierre"] . "</td>    <td>" . $datos[$i]["estado"] . "</td> </tr>";
     }
     ?>
   </tbody>
