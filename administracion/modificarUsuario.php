@@ -1,28 +1,35 @@
 <!DOCTYPE html>
 <?php
 
-include "databaseManager.inc.php";
-session_start();
-if (isset($_SESSION["rol"])) {
-    if ($_SESSION["rol"] == "administrador") {
-        $nombre = $_SESSION["nombre"];
-    } else {
+include "../archivos_generales/databaseManager.inc.php";
 
-        header("Location: logadosView.php");
+
+
+if (count($_GET) > 0) {
+    $id = $_GET["variableId"];
+    $user = getUserxId($id);
+} else {
+    $id = $_POST["id"];
+    $user = getUserxId($id);
+}
+$error = '';
+if (count($_POST) > 0) {
+
+
+
+    $cumplido = modificarUsuario($id, $_POST["nombre"], $_POST["rol"], $_POST["mail"], 1);
+    if ($cumplido == true) {
+        header("Location: administrarUsuarios.php");
+        exit();
+    } else {
+        $error = "Datos incorrectos o no se ha actualizado nada";
     }
 }
-
-
-
 
 ?>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administracion</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +47,6 @@ if (isset($_SESSION["rol"])) {
     <style id='rs-plugin-settings-inline-css' type='text/css'>
 
     </style>
-
     <link rel='stylesheet' id='bookly-ladda.min.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/ladda.min.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.date.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.date.css?ver=20.6' type='text/css' media='all' />
@@ -55,6 +61,8 @@ if (isset($_SESSION["rol"])) {
     <link rel='stylesheet' id='sf-main-css' href='https://iespoligonosur.org/www/wp-content/themes/dante-child/style.css' type='text/css' media='all' />
     <link rel='stylesheet' id='sf-responsive-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/responsive.css' type='text/css' media='all' />
     <script src="./js/sweetalert.min.js"></script>
+    <title>Portal de incidencias</title>
+
     <style>
         .row g-5 {
             margin-left: 2px;
@@ -75,26 +83,6 @@ if (isset($_SESSION["rol"])) {
             margin-left: 1rem;
         }
 
-        .dc-mega {
-            margin-left: 2rem;
-        }
-
-        .table {
-
-            margin-left: 2rem;
-            border-collapse: collapse;
-            text-align: center;
-            font-size: 2em;
-            font-family: sans-serif;
-            min-width: 300px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
-            margin-left: 2rem;
-            background-color: white;
-            color: #ffffff;
-            text-align: left;
-
-        }
-
         h1 {
             text-align: left;
         }
@@ -106,7 +94,6 @@ if (isset($_SESSION["rol"])) {
 </head>
 
 <body>
-
 
 
 
@@ -159,19 +146,22 @@ if (isset($_SESSION["rol"])) {
                 <h1>Portal de incidencias</h1>
 
             </div>
+
             <div id="breadcrumbs">
 
 
-                <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
+            <a title="cerrar sesión." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesión</a>
             </div>
+
             <div id="breadcrumbs">
+
 
                 <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
             </div>
 
             <div id="breadcrumbs">
 
-                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+                <a title="crear incidencia." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
 
             </div>
 
@@ -187,11 +177,10 @@ if (isset($_SESSION["rol"])) {
                 <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
 
             </div>
+        </div>
 
         </div>
         </div>
-        <br>
-        <br>
         <div class="row g-5">
             <div class="col-md-5 col-lg-4 order-md-last " id="frame">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -231,67 +220,40 @@ if (isset($_SESSION["rol"])) {
                 </ul>
             </div>
             <div class=" col-md-7 col-lg-8">
-                <h2 class="dc-mega">Solicitudes de registro</h2>
+                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
 
-                <?php
+                    <input type="hidden" name="id" value="<?php echo $user["id"]; ?>">
 
-                $lista = obtenerPeticiones();
+                    <div class="form-group ">
+                        <label for="nombre">Nombre del usuario</label>
+                        <input type="text" class="form-control" name="nombre" value='<?php echo $user["nombre"]; ?>' aria-describedby="nombre" placeholder='<?php echo $user["nombre"]; ?>'>
 
-                echo "<table class='container-fluid '>";
-                echo "<th>", "usuario", "</th>";
-                echo "<th>", "nick", "</th>";
+                    </div>
 
-                echo "<th>", "mensaje", "</th>";
-                echo "<th>", "validar", "</th>";
+                    <div class="form-group ">
+                        <label for="nombre">Rol del usuario</label>
+                        <input type="text" class="form-control" name="rol" value='<?php echo $user["rol"]; ?>' aria-describedby="rol" placeholder='<?php echo $user["rol"]; ?>'>
 
+                    </div>
 
+                    <div class="form-group ">
+                        <label for="nombre">Mail del usuario</label>
+                        <input type="text" class="form-control" name="mail" value='<?php echo $user["mail"]; ?>' aria-describedby="rol" placeholder='<?php echo $user["mail"]; ?>'>
 
-                foreach ($lista as $fila) {
-
-                    echo "<tr class='mr-2 ml-2'>";
-
-                    echo "<td class='mr-2 ml-2'>";
-
-
-
-                    echo $fila['nombre'];
-
-                    echo "</td>";
-
-                    echo "<td>";
-
-                    echo $fila['email'];
-
-                    echo "</td>";
+    </div>
 
 
-                    echo "<td>";
-
-                    echo $fila['mensaje'];
-
-                    echo "</td>";
-
-                    echo "<td>";
-
-                    echo "<a type='button' class='btn btn-success  btn-md btn-outline-light' href='validarUsuario.php?varId=" . $fila["id"] . "'>";
-                    echo "validar";
-                    echo "</a>";
-                    echo "</td>";
-
-                    echo "</tr>";
-                }
-                echo "</table>";
-                echo "<br>";
-
-
-
-                ?>
+                    <div class="form-group mb-10">
+                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
+                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
+                    </div>
+                    <br>
+                </form>
 
             </div>
         </div>
-        </div>
     </section>
-
+    <br>
 
     <section id="footer" class="footer-divider bg-secondary">
         <div class="container">
@@ -304,7 +266,6 @@ if (isset($_SESSION["rol"])) {
                         </div>
                     </section>
                 </div>
-
 
 
                 <section class="fw-row asset-bg ">
@@ -331,3 +292,17 @@ if (isset($_SESSION["rol"])) {
                 </section>
             </div>
     </section>
+    </div>
+
+
+    </div>
+    </div>
+
+    <!--// CLOSE #footer //-->
+    </section>
+
+
+
+</body>
+
+</html>

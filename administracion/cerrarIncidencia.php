@@ -1,36 +1,73 @@
 <!DOCTYPE html>
 <?php
-ob_start();
-include "databaseManager.inc.php";
 
-@session_start();
+use PHPMailer\PHPMailer\PHPMailer;
 
-if (count($_POST) > 0) {
-    function seguro($valor)
-    {
-        $valor = strip_tags($valor);
-        $valor = stripslashes($valor);
-        $valor = htmlspecialchars($valor);
-        return $valor;
-    }
+include "../archivos_generales/databaseManager.inc.php";
 
-    $id = insertaIncidencia($_SESSION["id"], $_POST["titulo"], $_POST["aula"], date("Y-m-d"), '', '', "nuevo", '');
-    if ($id != 0) {
-        if (isset($_SESSION["rol"])) {
-            if ($_SESSION["rol"] != "administrador") {
-                header("Location: logadosView.php");
-            } else {
-                header("Location: listadoIncidenciasView.php");
-                
-            }
-        } else {
-            echo "error en la sesion";
-        }
+function envioMensaje($remitente, $pass, $destinatario, $asunto)
+{
+    
+    require '../PHPMailer-master/src/PHPMailer.php';
+    require '../PHPMailer-master/src/SMTP.php';
+    require '../PHPMailer-master/src/Exception.php';
+
+    $mail = new PHPMailer();
+
+    $body = "incidencia cerrada";
+
+    $mail->IsSMTP();
+    $mail->Host = "smtp.gmail.com";
+    $mail->SMTPSecure = 'tls';
+    $mail->SMTPAuth = true;
+    $mail->Port = 587;
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+
+    $mail->From = $remitente;
+    $mail->FromName = $remitente;
+    $mail->Username   = $remitente;
+    $mail->Password   = $pass;
+    $mail->SetFrom($remitente);
+    $mail->AddReplyTo($destinatario);
+    $mail->Subject    =  $asunto;
+
+
+    $mail->MsgHTML($body);
+    $mail->IsHTML(true);
+
+
+    $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
+    if (!$mail->Send()) {
+        echo "Mailer Error: " . $mail->ErrorInfo;
     } else {
-        $error = "error durante la carga";
+        echo '<script language="javascript">alert("Se ha notificado el cierre al creador por correo");</script>'; 
     }
 }
 
+$id = $_GET["variableId"];
+$incidencia = obtenerIncidencia($id);
+
+
+
+$cumplido = cambiarEstado(date("Y-m-d"), "resuelto", $incidencia["id"]);
+
+if ($cumplido == true) {
+    $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+    foreach ($user as $fila) {
+       
+            envioMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', 'aixa_4292', $fila['mail'], "Cerrada la incidencia: " . $id . " con fecha " . date("Y-m-d"));
+        
+        $mensaje = "se ha cerrado la incidencia";
+    }
+} else {
+    $error = "Datos incorrectos o no se ha actualizado nada";
+}
 
 
 
@@ -38,10 +75,6 @@ if (count($_POST) > 0) {
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear incidencia</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,7 +92,6 @@ if (count($_POST) > 0) {
     <style id='rs-plugin-settings-inline-css' type='text/css'>
 
     </style>
-    <link rel="stylesheet" href="css/table.css">
     <link rel='stylesheet' id='bookly-ladda.min.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/ladda.min.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.date.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.date.css?ver=20.6' type='text/css' media='all' />
@@ -73,11 +105,12 @@ if (count($_POST) > 0) {
     <link rel='stylesheet' id='ssgizmo-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/ss-gizmo.css' type='text/css' media='all' />
     <link rel='stylesheet' id='sf-main-css' href='https://iespoligonosur.org/www/wp-content/themes/dante-child/style.css' type='text/css' media='all' />
     <link rel='stylesheet' id='sf-responsive-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/responsive.css' type='text/css' media='all' />
-    <script src="./js/sweetalert.min.js"></script>
+    <script src="../js/sweetalert.min.js"></script>
+    <title>Portal de incidencias</title>
+
     <style>
         .row g-5 {
             margin-left: 2px;
-            display: inline-block;
         }
 
 
@@ -88,7 +121,6 @@ if (count($_POST) > 0) {
         .frame {
             font-family: sans-serif;
             margin-right: 3rem;
-
         }
 
         .form-group {
@@ -107,10 +139,6 @@ if (count($_POST) > 0) {
 </head>
 
 <body>
-
-
-
-
 
 
 
@@ -157,159 +185,91 @@ if (count($_POST) > 0) {
     </nav>
 
     <section>
-        <div class="page-heading  clearfix asset-bg none">
-            <div class="container">
+    <div class="page-heading  clearfix asset-bg none">
+    <div class="container">
 
-                <h1>Portal de incidencias</h1>
+      <h1>Portal de incidencias</h1>
 
+    </div>
+
+    <div id="breadcrumbs">
+
+
+      <a title="cerrar sesión." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesión</a>
+    </div>
+
+    <div id="breadcrumbs">
+
+
+      <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+    </div>
+
+    <div id="breadcrumbs">
+
+      <a title="crear incidencia." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
+
+    </div>
+
+    <div id="breadcrumbs">
+
+      <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
+
+
+    </div>
+
+    <div id="breadcrumbs">
+
+      <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
+
+    </div>
+  </div>
+       
+            <div class="row g-5">
+                <div class="col-md-5 col-lg-4 order-md-last " id="frame">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-success">NOVEDADES</span>
+
+                    </h4>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between lh-sm">
+                            <div>
+                                <a class="my-0">Abierto el plazo de becas del curso 2022/23</a>
+                                <p> 18 de Abril de 2022</p>
+                            </div>
+
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between lh-sm">
+                            <div>
+                                <a class="my-0">CAMPAÑA DONACIÓN DE SANGRE</a>
+                                <p class="text-muted">20 de marzo 2022</p>
+                            </div>
+
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between lh-sm">
+                            <div>
+                                <a class="my-0">celebración del día de Andalucía en nuestro centro</a>
+                                <p class="text-muted">1 de marzo 2022</p>
+                            </div>
+
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between lh-sm">
+                            <div>
+                                <a class="my-0">Empiezan las jornadas laborales</a>
+                                <p class="text-muted">15 de diciembre de 2021</p>
+                            </div>
+
+                        </li>
+
+                    </ul>
+                </div>
+                <div class=" col-md-7 col-lg-8">
+                    <h2 class="dc-mega">Incidencia cerrada</h2>
+                    <h2><?php echo $mensaje; ?></h2>
+
+                </div>
             </div>
-            <?php
-
-            if (isset($_SESSION["rol"])) {
-                if ($_SESSION["rol"] != "administrador") {
-                    menuUsuario();
-                } else {
-                    menuAdmin();
-                    
-                }
-            } else {
-                echo "error en la sesion";
-            }
-
-            function menuUsuario()
-            {
-
-                echo " <div id='breadcrumbs'>";
-                echo " <a title='cerrar Sesion.' href='cerrarSesion.php' class='home'>Cerrar sesion</a>";
-
-                echo " </div>";
-
-                echo " <div id='breadcrumbs'>";
-                echo " <a title='tu perfil.' href='logadosView.php' class='home'>Tu perfil</a>";
-
-                echo " </div>";
-            }
-            function menuAdmin()
-            {
-
-                echo " <div id='breadcrumbs'>";
-                echo " <a title='cerrar Sesion.' href='cerrarSesion.php' class='home'>Cerrar sesion</a>";
-
-                echo " </div>";
-                
-                echo " <div id='breadcrumbs'>";
-                echo " <a title='ver listado incidencias.' href='listadoIncidenciasView.php' class='home'>Listado de incidencias</a>";
-
-                echo " </div>";
-
-                echo " <div id='breadcrumbs'>";
-
-                echo  "<a title='crear incidencia.' href='crearIncidencias.php' class='home'>Crear incidencia</a>";
-
-                echo " </div>";
-
-                echo "<div id='breadcrumbs'>";
-
-                echo "<a title='validar usuarios.' href='administracionView.php' class='home'>Validar usuarios</a>";
-
-
-                echo "</div>";
-
-                echo "  <div id='breadcrumbs'>";
-
-                echo    "<a title='ver listado incidencias.' href='administrarUsuarios.php' class='home'>Administrar usuarios</a>";
-
-                echo "</div>";
-
-                echo "  </div>";
-            }
-
-            ?>
-        </div>
-
-        <div class="row g-5">
-            <div class="col-md-5 col-lg-4 order-md-last " id="frame">
-                <h4 class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="text-success">NOVEDADES</span>
-
-                </h4>
-                <ul class="list-group mb-3">
-                    <li class="list-group-item d-flex justify-content-between lh-sm">
-                        <div>
-                            <a class="my-0">Abierto el plazo de becas del curso 2022/23</a>
-                            <p> 18 de Abril de 2022</p>
-                        </div>
-
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between lh-sm">
-                        <div>
-                            <a class="my-0">CAMPAÑA DONACIÓN DE SANGRE</a>
-                            <p class="text-muted">20 de marzo 2022</p>
-                        </div>
-
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between lh-sm">
-                        <div>
-                            <a class="my-0">celebración del día de Andalucía en nuestro centro</a>
-                            <p class="text-muted">1 de marzo 2022</p>
-                        </div>
-
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between lh-sm">
-                        <div>
-                            <a class="my-0">Empiezan las jornadas laborales</a>
-                            <p class="text-muted">15 de diciembre de 2021</p>
-                        </div>
-
-                    </li>
-
-                </ul>
-            </div>
-            <div class=" col-md-6 col-lg-7">
-                <h2 class="dc-mega">Da de alta una incidencia</h2>
-
-
-                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
-                    <div class="form-group ">
-                        <label for="titulo">Descripción de la incidencia</label>
-                        <input type="text" class="form-control" name="titulo" aria-describedby="titulo" placeholder="Descripción de la incidencia" required>
-
-                    </div>
-
-                    <div class="form-group">
-                        <label for="aula">Identificador del aula</label>
-                        <select class="form-control" name="aula" id="exampleFormControlSelect1">
-
-                            <?php $lista = obtenerAulas();
-
-                            foreach ($lista as $fila) {
-                                echo '<option value="' . $fila["id_aula"] . '">';
-
-                                echo $fila["numeroAula"];
-
-                                echo "</option>";
-                            }
-
-
-                            ?>
-                        </select>
-                    </div>
-                    <div class="form-group mb-10">
-                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
-                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
-                    </div>
-                    <br>
-                </form>
-
-            </div>
-
-
-
-        </div>
-        </div>
     </section>
-
-
+    <br>
 
     <section id="footer" class="footer-divider bg-secondary">
         <div class="container">
@@ -322,7 +282,6 @@ if (count($_POST) > 0) {
                         </div>
                     </section>
                 </div>
-
 
 
                 <section class="fw-row asset-bg ">
@@ -349,3 +308,17 @@ if (count($_POST) > 0) {
                 </section>
             </div>
     </section>
+    </div>
+
+
+    </div>
+    </div>
+
+    <!--// CLOSE #footer //-->
+    </section>
+
+
+
+</body>
+
+</html>

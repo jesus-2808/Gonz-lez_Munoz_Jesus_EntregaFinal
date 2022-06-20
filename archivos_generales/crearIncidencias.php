@@ -1,12 +1,36 @@
 <!DOCTYPE html>
 <?php
-
+ob_start();
 include "databaseManager.inc.php";
 
-$id = $_GET["varId"];
+@session_start();
 
-$error = 'Se ha solicitado el cierre de la incidencia ' . $id;
-solicitudCierre(1, $id);
+if (count($_POST) > 0) {
+    function seguro($valor)
+    {
+        $valor = strip_tags($valor);
+        $valor = stripslashes($valor);
+        $valor = htmlspecialchars($valor);
+        return $valor;
+    }
+
+    $id = insertaIncidencia($_SESSION["id"], $_POST["titulo"], $_POST["aula"], date("Y-m-d"), '', '', "nuevo", '');
+    if ($id != 0) {
+        if (isset($_SESSION["rol"])) {
+            if ($_SESSION["rol"] != "administrador") {
+                header("Location: ../usuarios/logadosView.php");
+            } else {
+                header("Location: ../administracion/listadoIncidenciasView.php");
+                
+            }
+        } else {
+            echo "error en la sesion";
+        }
+    } else {
+        $error = "error durante la carga";
+    }
+}
+
 
 
 
@@ -14,6 +38,10 @@ solicitudCierre(1, $id);
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear incidencia</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,6 +59,7 @@ solicitudCierre(1, $id);
     <style id='rs-plugin-settings-inline-css' type='text/css'>
 
     </style>
+    <link rel="stylesheet" href="css/table.css">
     <link rel='stylesheet' id='bookly-ladda.min.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/ladda.min.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.date.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.date.css?ver=20.6' type='text/css' media='all' />
@@ -45,11 +74,10 @@ solicitudCierre(1, $id);
     <link rel='stylesheet' id='sf-main-css' href='https://iespoligonosur.org/www/wp-content/themes/dante-child/style.css' type='text/css' media='all' />
     <link rel='stylesheet' id='sf-responsive-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/responsive.css' type='text/css' media='all' />
     <script src="./js/sweetalert.min.js"></script>
-    <title>Portal de incidencias</title>
-
     <style>
         .row g-5 {
             margin-left: 2px;
+            display: inline-block;
         }
 
 
@@ -60,6 +88,7 @@ solicitudCierre(1, $id);
         .frame {
             font-family: sans-serif;
             margin-right: 3rem;
+
         }
 
         .form-group {
@@ -78,6 +107,10 @@ solicitudCierre(1, $id);
 </head>
 
 <body>
+
+
+
+
 
 
 
@@ -130,22 +163,70 @@ solicitudCierre(1, $id);
                 <h1>Portal de incidencias</h1>
 
             </div>
+            <?php
 
-            <div id="breadcrumbs">
-                <a title="cerrar sesion." href="cerrarSesion.php" class="home">Cerrar sesion</a>
-            </div>
+            if (isset($_SESSION["rol"])) {
+                if ($_SESSION["rol"] != "administrador") {
+                    menuUsuario();
+                } else {
+                    menuAdmin();
+                    
+                }
+            } else {
+                echo "error en la sesion";
+            }
 
-            <div id="breadcrumbs">
+            function menuUsuario()
+            {
 
-                <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
-            </div>
-            <div id="breadcrumbs">
-                <a title="Tu perfil." href="logadosView.php" class="home">Tu perfil</a>
-            </div>
-           
+                echo " <div id='breadcrumbs'>";
+                echo " <a title='cerrar Sesion.' href='cerrarSesion.php' class='home'>Cerrar sesion</a>";
 
+                echo " </div>";
+
+                echo " <div id='breadcrumbs'>";
+                echo " <a title='tu perfil.' href='../usuarios/logadosView.php' class='home'>Tu perfil</a>";
+
+                echo " </div>";
+            }
+            function menuAdmin()
+            {
+
+                echo " <div id='breadcrumbs'>";
+                echo " <a title='cerrar Sesion.' href='cerrarSesion.php' class='home'>Cerrar sesion</a>";
+
+                echo " </div>";
+                
+                echo " <div id='breadcrumbs'>";
+                echo " <a title='ver listado incidencias.' href='../administracion/listadoIncidenciasView.php' class='home'>Listado de incidencias</a>";
+
+                echo " </div>";
+
+                echo " <div id='breadcrumbs'>";
+
+                echo  "<a title='crear incidencia.' href='crearIncidencias.php' class='home'>Crear incidencia</a>";
+
+                echo " </div>";
+
+                echo "<div id='breadcrumbs'>";
+
+                echo "<a title='validar usuarios.' href='../administracion/administracionView.php' class='home'>Validar usuarios</a>";
+
+
+                echo "</div>";
+
+                echo "  <div id='breadcrumbs'>";
+
+                echo    "<a title='ver listado incidencias.' href='../administracion/administrarUsuarios.php' class='home'>Administrar usuarios</a>";
+
+                echo "</div>";
+
+                echo "  </div>";
+            }
+
+            ?>
         </div>
-        </div>
+
         <div class="row g-5">
             <div class="col-md-5 col-lg-4 order-md-last " id="frame">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -184,14 +265,51 @@ solicitudCierre(1, $id);
 
                 </ul>
             </div>
-            <div class=" col-md-7 col-lg-8">
-                <h2 class="dc-mega">Cierre de incidencia propuesto</h2>
-                <h2><?php echo $error; ?></h2>
+            <div class=" col-md-6 col-lg-7">
+                <h2 class="dc-mega">Da de alta una incidencia</h2>
+
+
+                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+                    <div class="form-group ">
+                        <label for="titulo">Descripción de la incidencia</label>
+                        <input type="text" class="form-control" name="titulo" aria-describedby="titulo" placeholder="Descripción de la incidencia" required>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aula">Identificador del aula</label>
+                        <select class="form-control" name="aula" id="exampleFormControlSelect1">
+
+                            <?php $lista = obtenerAulas();
+
+                            foreach ($lista as $fila) {
+                                echo '<option value="' . $fila["id_aula"] . '">';
+
+                                echo $fila["numeroAula"];
+
+                                echo "</option>";
+                            }
+
+
+                            ?>
+                        </select>
+                    </div>
+                    <div class="form-group mb-10">
+                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
+                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
+                    </div>
+                    <br>
+                </form>
 
             </div>
+
+
+
+        </div>
         </div>
     </section>
-    <br>
+
+
 
     <section id="footer" class="footer-divider bg-secondary">
         <div class="container">
@@ -204,6 +322,7 @@ solicitudCierre(1, $id);
                         </div>
                     </section>
                 </div>
+
 
 
                 <section class="fw-row asset-bg ">
@@ -230,17 +349,3 @@ solicitudCierre(1, $id);
                 </section>
             </div>
     </section>
-    </div>
-
-
-    </div>
-    </div>
-
-    <!--// CLOSE #footer //-->
-    </section>
-
-
-
-</body>
-
-</html>

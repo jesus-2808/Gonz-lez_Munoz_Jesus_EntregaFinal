@@ -1,7 +1,7 @@
 <?php
 $servidor = "localhost";
 $baseDatos = "proyecto_integrado";
-$usuario = "root";
+$usuario = "phpmyadmin";
 $passw = "root";
 
 function insertaPeticion($nombre, $email, $pass, $mensaje)
@@ -751,5 +751,5 @@ function obtenerIncidenciaxComentario($id)
     }
 
 }
-editarComentario(9, "prueba", date("Y-m-d"), 11);
+
 

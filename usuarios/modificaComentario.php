@@ -1,76 +1,26 @@
 <!DOCTYPE html>
 <?php
 
-use PHPMailer\PHPMailer\PHPMailer;
-
-include "databaseManager.inc.php";
-
-function envioMensaje($remitente, $pass, $destinatario, $asunto)
-{
-    require 'PHPMailer-master\src\PHPMailer.php';
-    require 'PHPMailer-master\src\SMTP.php';
-    require 'PHPMailer-master\src\Exception.php';
-
-    $mail = new PHPMailer();
-
-    $body = "incidencia cerrada";
-
-    $mail->IsSMTP();
-    $mail->Host = "smtp.gmail.com";
-    $mail->SMTPSecure = 'tls';
-    $mail->SMTPAuth = true;
-    $mail->Port = 587;
-    $mail->SMTPOptions = array(
-        'ssl' => array(
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-            'allow_self_signed' => true
-        )
-    );
-
-    $mail->From = $remitente;
-    $mail->FromName = $remitente;
-    $mail->Username   = $remitente;
-    $mail->Password   = $pass;
-    $mail->SetFrom($remitente);
-    $mail->AddReplyTo($destinatario);
-    $mail->Subject    =  $asunto;
+include "../archivos_generales/databaseManager.inc.php";
 
 
-    $mail->MsgHTML($body);
-    $mail->IsHTML(true);
-
-
-    $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
-    if (!$mail->Send()) {
-        echo "Mailer Error: " . $mail->ErrorInfo;
-    } else {
-        echo "Message has been sent";
-    }
-}
-
-$id = $_GET["variableId"];
-$incidencia = obtenerIncidencia($id);
-
-
-
-$cumplido = cambiarEstado(date("Y-m-d"), "resuelto", $incidencia["id"]);
-
-if ($cumplido == true) {
-    $user = obtenerUsuarioxId($incidencia["id_usuario"]);
-    foreach ($user as $fila) {
-        if ($fila['notificacionEmail'] == 1) {
-            envioMensaje($fila['nombre'] , $fila['password'], $fila['mail'], "Cerrada la incidencia: " . $id . " con fecha " . date("Y-m-d"));
-        } else {
-            echo '<script language="javascript">swal("El creador de la incidencia no desea recibir notificaciones por correo");</script>';
-        }
-        $mensaje = "se ha cerrado la incidencia";
-    }
+@session_start();
+if (count($_GET) > 0) {
+    $id = $_GET["variableId"];
 } else {
-    $error = "Datos incorrectos o no se ha actualizado nada";
+    $id = $_POST["id"];
 }
+$error = '';
+if (count($_POST) > 0) {
 
-
+    $cumplido = editarComentario($_POST["id"],  $_POST["mensaje"], date("Y-m-d"), $_SESSION["id"]);
+    if ($cumplido == true) {
+        header("Location: logadosView.php");
+        exit();
+    } else {
+        $error = "Datos incorrectos o no se ha actualizado nada";
+    }
+}
 
 ?>
 <html lang="en">
@@ -186,89 +136,89 @@ if ($cumplido == true) {
     </nav>
 
     <section>
-    <div class="page-heading  clearfix asset-bg none">
-    <div class="container">
+        <div class="page-heading  clearfix asset-bg none">
+            <div class="container">
 
-      <h1>Portal de incidencias</h1>
+                <h1>Portal de incidencias</h1>
 
-    </div>
-
-    <div id="breadcrumbs">
-
-
-      <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
-    </div>
-
-    <div id="breadcrumbs">
-
-
-      <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
-    </div>
-
-    <div id="breadcrumbs">
-
-      <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
-
-    </div>
-
-    <div id="breadcrumbs">
-
-      <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
-
-
-    </div>
-
-    <div id="breadcrumbs">
-
-      <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
-
-    </div>
-  </div>
-       
-            <div class="row g-5">
-                <div class="col-md-5 col-lg-4 order-md-last " id="frame">
-                    <h4 class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-success">NOVEDADES</span>
-
-                    </h4>
-                    <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <a class="my-0">Abierto el plazo de becas del curso 2022/23</a>
-                                <p> 18 de Abril de 2022</p>
-                            </div>
-
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <a class="my-0">CAMPAÑA DONACIÓN DE SANGRE</a>
-                                <p class="text-muted">20 de marzo 2022</p>
-                            </div>
-
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <a class="my-0">celebración del día de Andalucía en nuestro centro</a>
-                                <p class="text-muted">1 de marzo 2022</p>
-                            </div>
-
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <a class="my-0">Empiezan las jornadas laborales</a>
-                                <p class="text-muted">15 de diciembre de 2021</p>
-                            </div>
-
-                        </li>
-
-                    </ul>
-                </div>
-                <div class=" col-md-7 col-lg-8">
-                    <h2 class="dc-mega">Incidencia cerrada</h2>
-                    <h2><?php echo $mensaje; ?></h2>
-
-                </div>
             </div>
+            <div id="breadcrumbs">
+                <a title="cerrar sesion." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesion</a>
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="ver listado incidencias." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="ver listado incidencias." href="logadosView.php" class="home">Volver a tu perfil</a>
+
+            </div>
+
+        </div>
+
+        </div>
+        </div>
+        <div class="row g-5">
+            <div class="col-md-5 col-lg-4 order-md-last " id="frame">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-success">NOVEDADES</span>
+
+                </h4>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item d-flex justify-content-between lh-sm">
+                        <div>
+                            <a class="my-0">Abierto el plazo de becas del curso 2022/23</a>
+                            <p> 18 de Abril de 2022</p>
+                        </div>
+
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between lh-sm">
+                        <div>
+                            <a class="my-0">CAMPAÑA DONACIÓN DE SANGRE</a>
+                            <p class="text-muted">20 de marzo 2022</p>
+                        </div>
+
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between lh-sm">
+                        <div>
+                            <a class="my-0">celebración del día de Andalucía en nuestro centro</a>
+                            <p class="text-muted">1 de marzo 2022</p>
+                        </div>
+
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between lh-sm">
+                        <div>
+                            <a class="my-0">Empiezan las jornadas laborales</a>
+                            <p class="text-muted">15 de diciembre de 2021</p>
+                        </div>
+
+                    </li>
+
+                </ul>
+            </div>
+            <div class=" col-md-7 col-lg-8">
+                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+
+                    <input type="hidden" name="id" value="<?php echo $id; ?>">
+                    
+                    <div class="form-group">
+                        <label for="validationMensaje">Modifica comentario:<span class="red">*</span></label>
+                        <textarea class="form-control" id="mensaje" name="mensaje" value="<?php echo $comentario["contenido"]; ?>" rows="2" min="20"></textarea>
+                    </div>
+
+
+                    <div class="form-group mb-10">
+                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
+                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
+                    </div>
+                    <br>
+                </form>
+
+            </div>
+        </div>
     </section>
     <br>
 

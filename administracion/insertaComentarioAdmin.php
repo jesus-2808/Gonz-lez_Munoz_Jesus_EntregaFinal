@@ -5,15 +5,15 @@
 
 use PHPMailer\PHPMailer\PHPMailer;
 
-include "databaseManager.inc.php";
+include "../archivos_generales/databaseManager.inc.php";
 
 
 @session_start();
 function enviarMensaje($remitente, $password, $destinatario, $asunto)
 {
-  require 'PHPMailer-master\src\PHPMailer.php';
-  require 'PHPMailer-master\src\SMTP.php';
-  require 'PHPMailer-master\src\Exception.php';
+  require '../PHPMailer-master\src\PHPMailer.php';
+  require '../PHPMailer-master\src\SMTP.php';
+  require '../PHPMailer-master\src\Exception.php';
 
   $mail = new PHPMailer();
 
@@ -70,14 +70,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $incidencia = obtenerIncidencia($id_2);
     $user = obtenerUsuarioxId($incidencia["id_usuario"]);
     foreach ($user as $fila) {
-      if($fila["notificacionEmail"]==1){
-        enviarMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org','aixa_4292', $fila['mail'], "Modificada la incidencia: " . $id_2 . " con fecha " . date("Y-m-d"));
+      if ($fila["notificacionEmail"] == 1) {
+        enviarMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', 'aixa_4292', $fila['mail'], "Modificada la incidencia: " . $id_2 . " con fecha " . date("Y-m-d"));
       } else {
-        $error="Se ha actualizado el comentario, pero no se ha enviado mensaje ya que el usuario tiene desactivada esa opcion";
+        $error = "Se ha actualizado el comentario, pero no se ha enviado mensaje ya que el usuario tiene desactivada esa opcion";
       }
       header("Location: listadoIncidenciasView.php");
     }
-    
   }
 }
 
@@ -206,12 +205,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <div id="breadcrumbs">
 
 
+        <a title="cerrar sesión." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesión</a>
+      </div>
+      <div id="breadcrumbs">
+
+
         <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
       </div>
 
       <div id="breadcrumbs">
 
-        <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+        <a title="crear incidencia." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
 
       </div>
 

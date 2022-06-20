@@ -1,11 +1,96 @@
 <!DOCTYPE html>
 <?php
 
-include "databaseManager.inc.php";
+use PHPMailer\PHPMailer\PHPMailer;
 
-$id = $_GET["variableId"];
-eliminarUsuario($id);
-$error = 'Se ha eliminado al usuario número ' . $id;
+require '../PHPMailer-master\src\PHPMailer.php';
+require '../PHPMailer-master\src\SMTP.php';
+require '../PHPMailer-master\src\Exception.php';
+
+include "../archivos_generales/databaseManager.inc.php";
+@session_start();
+function enviaMensaje($remitente, $pass, $destinatario, $asunto)
+{
+
+    $mail = new PHPMailer();
+
+    $body = $_POST["titulo"];
+
+    $mail->IsSMTP();
+    $mail->Host = "smtp.gmail.com";
+    $mail->SMTPSecure = 'tls';
+    $mail->SMTPAuth = true;
+    $mail->Port = 587;
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        )
+    );
+
+    $mail->From = $remitente;
+    $mail->FromName = $remitente;
+    $mail->Username   = $remitente;
+    $mail->Password   = $pass;
+    $mail->SetFrom($remitente);
+    $mail->AddReplyTo($destinatario);
+    $mail->Subject    =  $asunto;
+
+
+    $mail->MsgHTML($body);
+    $mail->IsHTML(true);
+
+
+    $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
+    if (!$mail->Send()) {
+        echo "Mailer Error: " . $mail->ErrorInfo;
+    } else {
+        echo "Message has been sent";
+    }
+}
+
+
+$estado = "";
+
+if (count($_GET) > 0) {
+    $id = $_GET["variableId"];
+    $incidencia = obtenerIncidencia($id);
+    $estado = $incidencia["estado"];
+} else {
+    $id = $_POST["id"];
+    $incidencia = obtenerIncidencia($id);
+    $estado = $incidencia["estado"];
+}
+$error = '';
+if (count($_POST) > 0) {
+    $estadoModif = $_POST["estado"];
+    if ($estadoModif != "resuelto") {
+        modificarIncidencia($id, $incidencia["id_usuario"], $_POST["titulo"], $incidencia["id_aula"], date("Y-m-d"), $estadoModif);
+        $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+        
+        foreach ($user as $fila) {
+            if ($fila['notificacionEmail'] == 1) {
+                enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org','aixa_4292', $fila['mail'], "Modificada la incidencia: " . $id . " con fecha " . date("Y-m-d"));
+            } else {
+                echo '<script language="javascript">swal("El creador de la incidencia no desea recibir notificaciones por correo");</script>';
+            }
+        }
+        header("Location: listadoIncidenciasView.php");
+    } else if ($estadoModif == "resuelto") {
+        cambiarEstado(date("Y-m-d"), $estadoModif, $id);
+        $user = obtenerUsuarioxId($incidencia["id_usuario"]);
+        
+        foreach ($user as $fila) {
+
+            enviaMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org','aixa_4292',$fila['mail'], "Cerrada incidencia: " . $id . " con fecha " . date("Y-m-d"));
+        }
+
+        header("Location: listadoIncidenciasView.php");
+    } else {
+        echo "no se ha realizado la operación correctamente";
+    }
+}
 
 
 
@@ -130,11 +215,13 @@ $error = 'Se ha eliminado al usuario número ' . $id;
 
             </div>
 
+
             <div id="breadcrumbs">
 
 
                 <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
             </div>
+
 
             <div id="breadcrumbs">
 
@@ -144,7 +231,7 @@ $error = 'Se ha eliminado al usuario número ' . $id;
 
             <div id="breadcrumbs">
 
-                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+                <a title="crear incidencia." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
 
             </div>
 
@@ -161,7 +248,8 @@ $error = 'Se ha eliminado al usuario número ' . $id;
 
             </div>
         </div>
-
+        </div>
+        </div>
         <div class="row g-5">
             <div class="col-md-5 col-lg-4 order-md-last " id="frame">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -200,10 +288,45 @@ $error = 'Se ha eliminado al usuario número ' . $id;
 
                 </ul>
             </div>
+            
             <div class=" col-md-7 col-lg-8">
-                <h2 class="dc-mega">Usuario eliminado</h2>
-                <h2><?php echo $error; ?></h2>
+                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
 
+                    <input type="hidden" name="id" value="<?php echo $incidencia["id"]; ?>">
+
+                    <div class="form-group ">
+                        <label for="nombre">titulo de la incidencia</label>
+                        <input type="text" class="form-control" name="titulo" value='<?php echo $incidencia["titulo"]; ?>' aria-describedby="titulo" placeholder='<?php echo $incidencia["titulo"]; ?>'>
+
+                    </div>
+
+
+                    <div class=form-group>
+                        <label for="validar">Seleccionar estado</label>
+                        <input type="radio" name="nuevo" id="nuevo" value="nuevo" <?php if ($estado == "nuevo") {
+                                                                                                    echo "checked";
+                                                                                                } ?>> nuevo
+                        <input type="radio" name="estado" id="en_progreso" value="en progreso" <?php if ($estado == "en progreso") {
+                                                                                                    echo "checked";
+                                                                                                } ?>> En progreso
+                        <input type="radio" name="estado" id="resuelto" value="resuelto" <?php if ($estado == "resuelto") {
+                                                                                                echo "checked";
+                                                                                            } ?>> Resuelto
+                        <input type="radio" name="estado" id="derivado" value="derivado" <?php if ($estado == "derivado") {
+                                                                                                echo "checked";
+                                                                                            } ?>> Derivado
+                        <br>
+
+                    </div>
+
+
+                    <div class="form-group mb-10">
+                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
+                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
+                    </div>
+                    <br>
+                </form>
+               
             </div>
         </div>
     </section>

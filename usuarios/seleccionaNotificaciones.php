@@ -1,44 +1,41 @@
 <!DOCTYPE html>
+
+<html lang="en">
 <?php
 
-include "databaseManager.inc.php";
+include "../archivos_generales/databaseManager.inc.php";
+session_start();
 
+if (isset($_SESSION["rol"])) {
+    if ($_SESSION["rol"] == "usuarioRegistrado") {
+        $nombre = $_SESSION["nombre"];
+        $mail = $_SESSION["mail"];
+        $rol = $_SESSION["rol"];
+        $id_user = $_SESSION["id"];
 
-
-if (count($_GET) > 0) {
-    $id = $_GET["variableId"];
-    $user = getUserxId($id);
-} else {
-    $id = $_POST["id"];
-    $user = getUserxId($id);
-}
-$error = '';
-if (count($_POST) > 0) {
-
-
-
-    $cumplido = modificarUsuario($id, $_POST["nombre"], $_POST["rol"], $_POST["mail"], 1);
-    if ($cumplido == true) {
-        header("Location: administrarUsuarios.php");
-        exit();
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $opcion = $_POST["opcion"];
+            if ($opcion == "si") {
+                modifOpcNotificaciones($nombre, 1);
+                header("Location: logadosView.php");
+            } else {
+                modifOpcNotificaciones($nombre, 0);
+                header("Location: logadosView.php");
+            }
+        }
     } else {
-        $error = "Datos incorrectos o no se ha actualizado nada";
+
+        header("Location: administracionView.php");
     }
 }
 
-
-
-
-
-
-
-
-
-
 ?>
-<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administracion</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,6 +53,7 @@ if (count($_POST) > 0) {
     <style id='rs-plugin-settings-inline-css' type='text/css'>
 
     </style>
+
     <link rel='stylesheet' id='bookly-ladda.min.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/ladda.min.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.date.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.date.css?ver=20.6' type='text/css' media='all' />
@@ -70,13 +68,21 @@ if (count($_POST) > 0) {
     <link rel='stylesheet' id='sf-main-css' href='https://iespoligonosur.org/www/wp-content/themes/dante-child/style.css' type='text/css' media='all' />
     <link rel='stylesheet' id='sf-responsive-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/responsive.css' type='text/css' media='all' />
     <script src="./js/sweetalert.min.js"></script>
-    <title>Portal de incidencias</title>
-
     <style>
         .row g-5 {
             margin-left: 2px;
         }
 
+        .texto_bienvenida {
+            margin-left: 8px;
+            font-size: 20px;
+        }
+
+        .texto_2 {
+            margin-left: 8px;
+            font-size: 20px;
+
+        }
 
         h2 {
             font-family: sans-serif;
@@ -92,6 +98,26 @@ if (count($_POST) > 0) {
             margin-left: 1rem;
         }
 
+        .dc-mega {
+            margin-left: 2rem;
+        }
+
+        .table {
+
+            margin-left: 2rem;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 2em;
+            font-family: sans-serif;
+            min-width: 300px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+            margin-left: 2rem;
+            background-color: white;
+            color: #ffffff;
+            text-align: left;
+
+        }
+
         h1 {
             text-align: left;
         }
@@ -103,6 +129,7 @@ if (count($_POST) > 0) {
 </head>
 
 <body>
+
 
 
 
@@ -157,33 +184,23 @@ if (count($_POST) > 0) {
             </div>
 
             <div id="breadcrumbs">
-
-
-                <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+            <a title="cerrar sesion." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesion</a>
             </div>
 
             <div id="breadcrumbs">
-
-                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
-
+                <a title="ver listado incidencias." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
             </div>
 
-            <div id="breadcrumbs">
-
-                <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
-
-
+            <div id="breadcrumbs">    
+            <a title="tu perfil." href="logadosView.php" class="home">Tu perfil</a>
             </div>
-
-            <div id="breadcrumbs">
-
-                <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
-
-            </div>
+  
         </div>
 
         </div>
         </div>
+        <br>
+        <br>
         <div class="row g-5">
             <div class="col-md-5 col-lg-4 order-md-last " id="frame">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -222,41 +239,31 @@ if (count($_POST) > 0) {
 
                 </ul>
             </div>
-            <div class=" col-md-7 col-lg-8">
-                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+            <div class="col-md-7 col-lg-8">
+                <div class="texto_bienvenida">
+                    <?php
 
-                    <input type="hidden" name="id" value="<?php echo $user["id"]; ?>">
-
-                    <div class="form-group ">
-                        <label for="nombre">Nombre del usuario</label>
-                        <input type="text" class="form-control" name="nombre" value='<?php echo $user["nombre"]; ?>' aria-describedby="nombre" placeholder='<?php echo $user["nombre"]; ?>'>
-
-                    </div>
-
-                    <div class="form-group ">
-                        <label for="nombre">Rol del usuario</label>
-                        <input type="text" class="form-control" name="rol" value='<?php echo $user["rol"]; ?>' aria-describedby="rol" placeholder='<?php echo $user["rol"]; ?>'>
-
-                    </div>
-
-                    <div class="form-group ">
-                        <label for="nombre">Mail del usuario</label>
-                        <input type="text" class="form-control" name="mail" value='<?php echo $user["mail"]; ?>' aria-describedby="rol" placeholder='<?php echo $user["mail"]; ?>'>
-
-    </div>
+                    echo "<p>Bienvenido $nombre</p>";
+                    ?>
+                    <form name='notificaciones' action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" enctype='multipart/form-data' method='POST'>
+                        <p> ¿Deseas recibir notificaciones de incidencias?</p>
+                      
+                        <input type='radio' id='opcion' name='opcion' value='si'>
+                        <label for='si'>sí</label>
+                        <input type='radio' id='opcion' name='opcion' value='no'>
+                        <label for='no'>no</label>
+                        <br>
+                        <button class='btn btn-primary' type='submit'>Confirmar
+                        </button>
 
 
-                    <div class="form-group mb-10">
-                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
-                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
-                    </div>
-                    <br>
-                </form>
 
+                </div>
             </div>
         </div>
+
     </section>
-    <br>
+
 
     <section id="footer" class="footer-divider bg-secondary">
         <div class="container">
@@ -269,6 +276,7 @@ if (count($_POST) > 0) {
                         </div>
                     </section>
                 </div>
+
 
 
                 <section class="fw-row asset-bg ">
@@ -295,17 +303,3 @@ if (count($_POST) > 0) {
                 </section>
             </div>
     </section>
-    </div>
-
-
-    </div>
-    </div>
-
-    <!--// CLOSE #footer //-->
-    </section>
-
-
-
-</body>
-
-</html>

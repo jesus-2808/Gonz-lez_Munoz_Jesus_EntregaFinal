@@ -3,7 +3,7 @@
 <html lang="en">
 <?php
 
-include "databaseManager.inc.php";
+include "../archivos_generales/databaseManager.inc.php";
 session_start();
 ?>
 
@@ -20,6 +20,7 @@ session_start();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"> </script>
+     
 
     <link rel='stylesheet' id='layerslider-css' href='https://iespoligonosur.org/www/wp-content/plugins/LayerSlider/static/layerslider/css/layerslider.css?ver=6.7.6' type='text/css' media='all' />
     <link rel='stylesheet' id='ls-google-fonts-css' href='https://fonts.googleapis.com/css?family=Lato:100,300,regular,700,900%7COpen+Sans:300%7CIndie+Flower:regular%7COswald:300,regular,700&#038;subset=latin%2Clatin-ext' type='text/css' media='all' />
@@ -160,12 +161,12 @@ session_start();
             </div>
 
             <div id="breadcrumbs">
-                <a title="cerrar sesion." href="cerrarSesion.php" class="home">Cerrar sesion</a>
+                <a title="cerrar sesion." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesion</a>
             </div>
 
             <div id="breadcrumbs">
 
-                <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
+                <a title="ver listado incidencias." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
             </div>
             <div id="breadcrumbs">
                 <a title="Tu perfil." href="logadosView.php" class="home">Tu perfil</a>

@@ -42,12 +42,11 @@
   <script src="./js/sweetalert.min.js"></script>
 
 
-  <script src="./js/sweetalert.min.js"></script>
   <title>Listado incidencias</title>
 </head>
 
 <body>
-  <?php include_once "../databaseManager.inc.php"; ?>
+  <?php include_once "../archivos_generales/databaseManager.inc.php"; ?>
   <nav class="navbar navbar-expand-sm navbar-light bg-success">
     <div id="logo" class="logo-left has-light-logo has-dark-logo clearfix">
       <a href="https://iespoligonosur.org">
@@ -98,7 +97,7 @@
     </div>
 
     <div id="breadcrumbs">
-    <a title="login." href="../index.php" class="home">Login</a>
+    <a title="login." href="../archivos_generales/index.php" class="home">Login</a>
     </div>
 
     <div id="breadcrumbs">

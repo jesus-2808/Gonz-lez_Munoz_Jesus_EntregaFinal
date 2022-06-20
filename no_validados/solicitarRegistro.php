@@ -127,7 +127,7 @@
 
       <div id="breadcrumbs">
 
-        <a title="login." href="../index.php" class="home">Login</a>
+        <a title="login." href="../archivos_generales/index.php" class="home">Login</a>
 
       </div>
 
@@ -175,7 +175,7 @@
       <div class=" col-md-7 col-lg-8">
         <h2 class="dc-mega">Solicita tu registro para reportar incidencias</h2>
         <?php
-        include "../databaseManager.inc.php";
+        include "../archivos_generales/databaseManager.inc.php";
 
         $error = "";
         if (count($_POST) > 0) {

@@ -3,11 +3,11 @@
 
 use PHPMailer\PHPMailer\PHPMailer;
 
-require 'PHPMailer-master\src\PHPMailer.php';
-require 'PHPMailer-master\src\SMTP.php';
-require 'PHPMailer-master\src\Exception.php';
+require '..\PHPMailer-master\src\PHPMailer.php';
+require '..\PHPMailer-master\src\SMTP.php';
+require '..\PHPMailer-master\src\Exception.php';
 
-include "databaseManager.inc.php";
+include "../archivos_generales/databaseManager.inc.php";
 
 
 function sendMessage($remitente, $pass, $destinatario, $asunto)
@@ -47,7 +47,7 @@ function sendMessage($remitente, $pass, $destinatario, $asunto)
   if (!$mail->Send()) {
       echo "Mailer Error: " . $mail->ErrorInfo;
   } else {
-      echo "Message has been sent";
+    echo '<script language="javascript">alert("Notificado al usuario");</script>'; 
   }
 }
 
@@ -97,7 +97,7 @@ if (!$cumplido) {
     <link rel='stylesheet' id='ssgizmo-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/ss-gizmo.css' type='text/css' media='all' />
     <link rel='stylesheet' id='sf-main-css' href='https://iespoligonosur.org/www/wp-content/themes/dante-child/style.css' type='text/css' media='all' />
     <link rel='stylesheet' id='sf-responsive-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/responsive.css' type='text/css' media='all' />
-    <script src="./js/sweetalert.min.js"></script>
+    <script src="../js/sweetalert.min.js"></script>
     <title>Portal de incidencias</title>
 
     <style>
@@ -187,7 +187,7 @@ if (!$cumplido) {
             <div id="breadcrumbs">
 
 
-                <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
+                <a title="cerrar sesión." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesión</a>
             </div>
             <div id="breadcrumbs">
 
@@ -196,7 +196,7 @@ if (!$cumplido) {
 
             <div id="breadcrumbs">
 
-                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+                <a title="crear incidencia." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
 
             </div>
 

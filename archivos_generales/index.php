@@ -1,41 +1,51 @@
 <!DOCTYPE html>
-
-<html lang="en">
 <?php
-
+ob_start();
 include "databaseManager.inc.php";
-session_start();
 
-if (isset($_SESSION["rol"])) {
-    if ($_SESSION["rol"] == "usuarioRegistrado") {
-        $nombre = $_SESSION["nombre"];
-        $mail = $_SESSION["mail"];
-        $rol = $_SESSION["rol"];
-        $id_user = $_SESSION["id"];
 
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $opcion = $_POST["opcion"];
-            if ($opcion == "si") {
-                modifOpcNotificaciones($nombre, 1);
-                header("Location: logadosView.php");
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    @session_start();
+    $correo = $_POST["email"];
+    $pass =  $_POST["passwd"];
+    $datosUsu = getUser($correo);
+
+
+
+
+    if ($datosUsu != '') {
+        if (password_verify($pass, $datosUsu["password"])) {
+
+            $_SESSION["id"] = $datosUsu["id"];
+            $_SESSION["rol"] = $datosUsu["rol"];
+            $_SESSION["nombre"] = $datosUsu["nombre"];
+            $_SESSION["mail"] = $datosUsu["mail"];
+
+
+            if ($_SESSION["rol"] == "administrador") {
+                echo "redireccion";
+                header("Location: ../administracion/administracionView.php");
             } else {
-                modifOpcNotificaciones($nombre, 0);
-                header("Location: logadosView.php");
+                header("Location: ../usuarios/logadosView.php");
             }
+        } else {
+            
+            echo "hay error";
         }
     } else {
-
-        header("Location: administracionView.php");
+        echo "el usuario o la contraseña no son correctos";
     }
 }
-
+ob_end_flush();
 ?>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administracion</title>
+    <title>Login</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,7 +63,7 @@ if (isset($_SESSION["rol"])) {
     <style id='rs-plugin-settings-inline-css' type='text/css'>
 
     </style>
-
+    <link rel="stylesheet" href="css/table.css">
     <link rel='stylesheet' id='bookly-ladda.min.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/ladda.min.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.date.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.date.css?ver=20.6' type='text/css' media='all' />
@@ -73,16 +83,6 @@ if (isset($_SESSION["rol"])) {
             margin-left: 2px;
         }
 
-        .texto_bienvenida {
-            margin-left: 8px;
-            font-size: 20px;
-        }
-
-        .texto_2 {
-            margin-left: 8px;
-            font-size: 20px;
-
-        }
 
         h2 {
             font-family: sans-serif;
@@ -98,26 +98,6 @@ if (isset($_SESSION["rol"])) {
             margin-left: 1rem;
         }
 
-        .dc-mega {
-            margin-left: 2rem;
-        }
-
-        .table {
-
-            margin-left: 2rem;
-            border-collapse: collapse;
-            text-align: center;
-            font-size: 2em;
-            font-family: sans-serif;
-            min-width: 300px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
-            margin-left: 2rem;
-            background-color: white;
-            color: #ffffff;
-            text-align: left;
-
-        }
-
         h1 {
             text-align: left;
         }
@@ -129,6 +109,9 @@ if (isset($_SESSION["rol"])) {
 </head>
 
 <body>
+
+
+
 
 
 
@@ -183,24 +166,15 @@ if (isset($_SESSION["rol"])) {
 
             </div>
 
-            <div id="breadcrumbs">
-            <a title="cerrar sesion." href="cerrarSesion.php" class="home">Cerrar sesion</a>
-            </div>
 
             <div id="breadcrumbs">
-                <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
+
+                <a title="ver listado incidencias." href="../no_validados/listadoNoValidados.php" class="home">Listado de incidencias</a>
+
             </div>
 
-            <div id="breadcrumbs">    
-            <a title="tu perfil." href="logadosView.php" class="home">Tu perfil</a>
-            </div>
-  
-        </div>
-
         </div>
         </div>
-        <br>
-        <br>
         <div class="row g-5">
             <div class="col-md-5 col-lg-4 order-md-last " id="frame">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -239,29 +213,31 @@ if (isset($_SESSION["rol"])) {
 
                 </ul>
             </div>
-            <div class="col-md-7 col-lg-8">
-                <div class="texto_bienvenida">
-                    <?php
-
-                    echo "<p>Bienvenido $nombre</p>";
-                    ?>
-                    <form name='notificaciones' action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" enctype='multipart/form-data' method='POST'>
-                        <p> ¿Deseas recibir notificaciones de incidencias?</p>
-                      
-                        <input type='radio' id='opcion' name='opcion' value='si'>
-                        <label for='si'>sí</label>
-                        <input type='radio' id='opcion' name='opcion' value='no'>
-                        <label for='no'>no</label>
-                        <br>
-                        <button class='btn btn-primary' type='submit'>Confirmar
-                        </button>
+            <div class=" col-md-6 col-lg-7">
+                <h2 class="dc-mega">Accede al sistema</h2>
 
 
+                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+        
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Cuenta de correo del instituto</label>
+                        <input type="email" class="form-control" name="email" aria-describedby="emailHelp" placeholder="Introduce tu correo" required>
 
-                </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="validationMensaje"> Password:<span class="red">*</span></label>
+                        <p><input type="password" placeholder="Ingrese su contraseña" name="passwd" /></p>
+                    </div>
+                    <div class="form-group mb-10">
+                    <p><a href="../no_validados/solicitarRegistro.php">¿No tienes cuenta? Solicita tu registro</a></p>
+                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
+                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
+                    </div>
+                    <br>
+                </form>
             </div>
         </div>
-
     </section>
 
 

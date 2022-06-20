@@ -1,36 +1,19 @@
 <!DOCTYPE html>
-
-<html lang="en">
 <?php
 
-include "databaseManager.inc.php";
-session_start();
+include "../archivos_generales/databaseManager.inc.php";
 
-if (count($_GET) > 0) {
-    $id = $_GET["varId"];
-  } else {
-    $id = $_POST["id"];
-  }
+$id = $_GET["varId"];
 
-$incidencia = obtenerIncidencia($id);
-$id_aula = $incidencia["id_aula"];
-$nombreAula = obtenerAula($id_aula);
+$error = 'Se ha solicitado el cierre de la incidencia ' . $id;
+solicitudCierre(1, $id);
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $comentario = $_POST["mensaje"];
-    insertaComentario($comentario, $id, date("Y-m-d"), $_SESSION["id"]);
-    header("Location: listadoIncidenciasView.php");
-} else {
-}
 
 ?>
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administracion</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,7 +31,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <style id='rs-plugin-settings-inline-css' type='text/css'>
 
     </style>
-
     <link rel='stylesheet' id='bookly-ladda.min.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/ladda.min.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.date.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.date.css?ver=20.6' type='text/css' media='all' />
@@ -63,21 +45,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel='stylesheet' id='sf-main-css' href='https://iespoligonosur.org/www/wp-content/themes/dante-child/style.css' type='text/css' media='all' />
     <link rel='stylesheet' id='sf-responsive-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/responsive.css' type='text/css' media='all' />
     <script src="./js/sweetalert.min.js"></script>
+    <title>Portal de incidencias</title>
+
     <style>
         .row g-5 {
             margin-left: 2px;
         }
 
-        .texto_bienvenida {
-            margin-left: 8px;
-            font-size: 20px;
-        }
-
-        .texto_2 {
-            margin-left: 8px;
-            font-size: 20px;
-
-        }
 
         h2 {
             font-family: sans-serif;
@@ -93,26 +67,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-left: 1rem;
         }
 
-        .dc-mega {
-            margin-left: 2rem;
-        }
-
-        .table {
-
-            margin-left: 2rem;
-            border-collapse: collapse;
-            text-align: center;
-            font-size: 2em;
-            font-family: sans-serif;
-            min-width: 300px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
-            margin-left: 2rem;
-            background-color: white;
-            color: #ffffff;
-            text-align: left;
-
-        }
-
         h1 {
             text-align: left;
         }
@@ -124,7 +78,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-
 
 
 
@@ -179,34 +132,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div id="breadcrumbs">
-
-
-                <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
+                <a title="cerrar sesion." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesion</a>
             </div>
 
             <div id="breadcrumbs">
 
-                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
-
+                <a title="crear incidencias." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
             </div>
-
             <div id="breadcrumbs">
-
-                <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
-
-
+                <a title="Tu perfil." href="logadosView.php" class="home">Tu perfil</a>
             </div>
+           
 
-            <div id="breadcrumbs">
-
-                <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
-
-            </div>
         </div>
-
-
-        <br>
-        <br>
+        </div>
         <div class="row g-5">
             <div class="col-md-5 col-lg-4 order-md-last " id="frame">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -245,29 +184,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 </ul>
             </div>
-            <div class="col-md-7 col-lg-8">
-                <div class="texto_bienvenida">
-                    <h1>Detalle de la incidencia</h1>
-                    <h3>Titulo : <?php echo $incidencia["titulo"] ?></h3>
-                    <p>Aula:<?php
-                            echo $nombreAula[0] ?></p>
-                    <p>Fecha de creación :<?php echo $incidencia["fecha_creacion"] ?></p>
-                    <p>Estado :<?php echo $incidencia["estado"] ?></p>
-                    <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
-                        <div class="form-group">
-                            <label for="validationMensaje">Inserta comentario:</label>  
-                            <input type="hidden" name="id" value="<?php echo $id; ?>">
-                            <textarea class="form-control" id="mensaje" name="mensaje" rows="2" min="20"></textarea>
-                        </div>
-                        <div class="form-group mb-10">
-                            <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
-                    </form>
-                </div>
+            <div class=" col-md-7 col-lg-8">
+                <h2 class="dc-mega">Cierre de incidencia propuesto</h2>
+                <h2><?php echo $error; ?></h2>
+
             </div>
         </div>
-        </div>
     </section>
-
+    <br>
 
     <section id="footer" class="footer-divider bg-secondary">
         <div class="container">
@@ -280,7 +204,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </section>
                 </div>
-
 
 
                 <section class="fw-row asset-bg ">
@@ -307,3 +230,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </section>
             </div>
     </section>
+    </div>
+
+
+    </div>
+    </div>
+
+    <!--// CLOSE #footer //-->
+    </section>
+
+
+
+</body>
+
+</html>

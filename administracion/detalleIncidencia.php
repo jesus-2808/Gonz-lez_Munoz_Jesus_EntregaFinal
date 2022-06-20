@@ -1,31 +1,36 @@
 <!DOCTYPE html>
+
+<html lang="en">
 <?php
 
-include "databaseManager.inc.php";
+include "../archivos_generales/databaseManager.inc.php";
+session_start();
 
-
-@session_start();
 if (count($_GET) > 0) {
-    $id = $_GET["variableId"];
+    $id = $_GET["varId"];
 } else {
     $id = $_POST["id"];
 }
-$error = '';
-if (count($_POST) > 0) {
 
-    $cumplido = editarComentario($_POST["id"],  $_POST["mensaje"], date("Y-m-d"), $_SESSION["id"]);
-    if ($cumplido == true) {
-        header("Location: logadosView.php");
-        exit();
-    } else {
-        $error = "Datos incorrectos o no se ha actualizado nada";
-    }
+$incidencia = obtenerIncidencia($id);
+$id_aula = $incidencia["id_aula"];
+$nombreAula = obtenerAula($id_aula);
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $comentario = $_POST["mensaje"];
+    insertaComentario($comentario, $id, date("Y-m-d"), $_SESSION["id"]);
+    header("Location: listadoIncidenciasView.php");
+} else {
 }
 
 ?>
-<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administracion</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,6 +39,8 @@ if (count($_POST) > 0) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Latest compiled JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"> </script>
+    <link rel="stylesheet" href="../css/botonera.css">
+    <link rel="stylesheet" href="../css/table.css">
 
     <link rel='stylesheet' id='layerslider-css' href='https://iespoligonosur.org/www/wp-content/plugins/LayerSlider/static/layerslider/css/layerslider.css?ver=6.7.6' type='text/css' media='all' />
     <link rel='stylesheet' id='ls-google-fonts-css' href='https://fonts.googleapis.com/css?family=Lato:100,300,regular,700,900%7COpen+Sans:300%7CIndie+Flower:regular%7COswald:300,regular,700&#038;subset=latin%2Clatin-ext' type='text/css' media='all' />
@@ -43,6 +50,7 @@ if (count($_POST) > 0) {
     <style id='rs-plugin-settings-inline-css' type='text/css'>
 
     </style>
+
     <link rel='stylesheet' id='bookly-ladda.min.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/ladda.min.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.css?ver=20.6' type='text/css' media='all' />
     <link rel='stylesheet' id='bookly-picker.classic.date.css-css' href='https://iespoligonosur.org/www/wp-content/plugins/bookly-responsive-appointment-booking-tool/frontend/resources/css/picker.classic.date.css?ver=20.6' type='text/css' media='all' />
@@ -57,13 +65,21 @@ if (count($_POST) > 0) {
     <link rel='stylesheet' id='sf-main-css' href='https://iespoligonosur.org/www/wp-content/themes/dante-child/style.css' type='text/css' media='all' />
     <link rel='stylesheet' id='sf-responsive-css' href='https://iespoligonosur.org/www/wp-content/themes/dante/css/responsive.css' type='text/css' media='all' />
     <script src="./js/sweetalert.min.js"></script>
-    <title>Portal de incidencias</title>
-
     <style>
         .row g-5 {
             margin-left: 2px;
         }
 
+        .texto_bienvenida {
+            margin-left: 8px;
+            font-size: 20px;
+        }
+
+        .texto_2 {
+            margin-left: 8px;
+            font-size: 20px;
+
+        }
 
         h2 {
             font-family: sans-serif;
@@ -79,6 +95,26 @@ if (count($_POST) > 0) {
             margin-left: 1rem;
         }
 
+        .dc-mega {
+            margin-left: 2rem;
+        }
+
+        .table {
+
+            margin-left: 2rem;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 2em;
+            font-family: sans-serif;
+            min-width: 300px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+            margin-left: 2rem;
+            background-color: white;
+            color: #ffffff;
+            text-align: left;
+
+        }
+
         h1 {
             text-align: left;
         }
@@ -90,6 +126,7 @@ if (count($_POST) > 0) {
 </head>
 
 <body>
+
 
 
 
@@ -143,26 +180,42 @@ if (count($_POST) > 0) {
 
             </div>
             <div id="breadcrumbs">
-                <a title="cerrar sesion." href="cerrarSesion.php" class="home">Cerrar sesion</a>
+
+
+                <a title="cerrar sesión." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesión</a>
             </div>
 
             <div id="breadcrumbs">
 
-                <a title="ver listado incidencias." href="crearIncidencias.php" class="home">Crear incidencia</a>
+
+                <a title="ver listado incidencias." href="listadoIncidenciasView.php" class="home">Listado de incidencias</a>
             </div>
 
             <div id="breadcrumbs">
 
-                <a title="ver listado incidencias." href="logadosView.php" class="home">Volver a tu perfil</a>
+                <a title="crear incidencia." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
 
             </div>
 
+            <div id="breadcrumbs">
+
+                <a title="validar usuarios." href="administracionView.php" class="home">Validar usuarios</a>
+
+
+            </div>
+
+            <div id="breadcrumbs">
+
+                <a title="ver listado incidencias." href="administrarUsuarios.php" class="home">Administrar usuarios</a>
+
+            </div>
         </div>
 
-        </div>
-        </div>
+
+        <br>
+        <br>
         <div class="row g-5">
-            <div class="col-md-5 col-lg-4 order-md-last " id="frame">
+            <div class="col-md-3 col-lg-3 order-md-last " id="frame">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-success">NOVEDADES</span>
 
@@ -199,28 +252,62 @@ if (count($_POST) > 0) {
 
                 </ul>
             </div>
-            <div class=" col-md-7 col-lg-8">
-                <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
+            <div class="col-md-7 col-lg-8">
+                <div class="texto_bienvenida">
+                    <h1>Detalle de la incidencia</h1>
+                    <h3>Titulo : <?php echo $incidencia["titulo"] ?></h3>
+                    <p>Aula:<?php
+                            echo $nombreAula[0] ?></p>
+                    <p>Fecha de creación :<?php echo $incidencia["fecha_creacion"] ?></p>
+                    <p>Estado :<?php echo $incidencia["estado"] ?></p>
+                    <?php
+       echo "<h3>COMENTARIOS DE LA INCIDENCIA</h3>";
+       $lista = obtenerComentarioxIncidencia($incidencia["id"]);
 
-                    <input type="hidden" name="id" value="<?php echo $id; ?>">
-                    
-                    <div class="form-group">
-                        <label for="validationMensaje">Inserta comentario:<span class="red">*</span></label>
-                        <textarea class="form-control" id="mensaje" name="mensaje" value="<?php echo $comentario["contenido"]; ?>" rows="2" min="20"></textarea>
-                    </div>
+       echo "<table class='container-fluid styled-table col-xs-11 ml-2 border='1''>";
+       echo "<th>", "contenido", "</th>";
+       echo "<th>", "usuario", "</th>";
+       echo "<th>", "Fecha de creación", "</th>";
+       
+
+       
+       foreach ($lista as $fila) {
+            
+        echo "<tr class='mr-2 ml-2'>";
+
+        echo "<td class='mr-2 ml-2'>";
+
+        
+
+        echo $fila['contenido'];
+
+        echo "</td>";
+
+        echo "<td>";
+       
+        echo obtenerNombreUsuarioxId ($fila['id_usuario'])["nombre"];
+
+        echo "</td>";
 
 
-                    <div class="form-group mb-10">
-                        <button class="btn btn-primary" type="submit" name="submit">Enviar</button>
-                        <button class="btn btn-success" type="reset" name="reset">Limpiar</button>
-                    </div>
-                    <br>
-                </form>
+        echo "<td>";
 
+        echo $fila['fecha_modificacion'];
+
+        echo "</td>";
+      
+      echo "</tr>";
+    }  
+        echo "</table>";
+     
+        ?>
+      
+                </div>
             </div>
         </div>
+        </div>
     </section>
-    <br>
+
 
     <section id="footer" class="footer-divider bg-secondary">
         <div class="container">
@@ -233,6 +320,7 @@ if (count($_POST) > 0) {
                         </div>
                     </section>
                 </div>
+
 
 
                 <section class="fw-row asset-bg ">
@@ -259,17 +347,3 @@ if (count($_POST) > 0) {
                 </section>
             </div>
     </section>
-    </div>
-
-
-    </div>
-    </div>
-
-    <!--// CLOSE #footer //-->
-    </section>
-
-
-
-</body>
-
-</html>

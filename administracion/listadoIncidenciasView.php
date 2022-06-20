@@ -4,7 +4,7 @@
 session_start();
 if (isset($_SESSION["rol"])) {
   if ($_SESSION["rol"] != "administrador") {
-    header("Location: logadosView.php");
+    header("Location: ../usuarios/logadosView.php");
   }
 } else {
   echo "error en la sesion";
@@ -15,7 +15,7 @@ if (isset($_SESSION["rol"])) {
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/table.css">
+  <link rel="stylesheet" href="../css/table.css">
   <link rel="stylesheet" href="fontawesome-free-5.15.4-web/css/all.min.css" />
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -56,7 +56,7 @@ if (isset($_SESSION["rol"])) {
 </head>
 
 <body>
-  <?php include_once "databaseManager.inc.php"; ?>
+  <?php include_once "../archivos_generales/databaseManager.inc.php"; ?>
   <nav class="navbar navbar-expand-sm navbar-light bg-success">
     <div id="logo" class="logo-left has-light-logo has-dark-logo clearfix">
       <a href="https://iespoligonosur.org">
@@ -109,7 +109,7 @@ if (isset($_SESSION["rol"])) {
     <div id="breadcrumbs">
 
 
-      <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
+      <a title="cerrar sesión." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesión</a>
     </div>
 
     <div id="breadcrumbs">
@@ -120,7 +120,7 @@ if (isset($_SESSION["rol"])) {
 
     <div id="breadcrumbs">
 
-      <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+      <a title="crear incidencia." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
 
     </div>
 
