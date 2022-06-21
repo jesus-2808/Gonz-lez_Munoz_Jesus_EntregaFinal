@@ -25,11 +25,11 @@ function enviandoMensaje($remitente, $pass, $destinatario, $asunto)
   $mail->SMTPAuth = true;
   $mail->Port = 587;
   $mail->SMTPOptions = array(
-      'ssl' => array(
-          'verify_peer' => false,
-          'verify_peer_name' => false,
-          'allow_self_signed' => true
-      )
+    'ssl' => array(
+      'verify_peer' => false,
+      'verify_peer_name' => false,
+      'allow_self_signed' => true
+    )
   );
 
   $mail->From = $remitente;
@@ -47,9 +47,9 @@ function enviandoMensaje($remitente, $pass, $destinatario, $asunto)
 
   $mail->AddAddress('jesus.gonzalez.munoz.al@iespoligonosur.org');
   if (!$mail->Send()) {
-      echo "Mailer Error: " . $mail->ErrorInfo;
+    echo "Mailer Error: " . $mail->ErrorInfo;
   } else {
-      echo "Message has been sent";
+    echo "Message has been sent";
   }
 }
 
@@ -57,7 +57,6 @@ function enviandoMensaje($remitente, $pass, $destinatario, $asunto)
 if (count($_GET) > 0) {
   $id_2 = $_GET["sndVarId"];
   $incidencia = obtenerIncidencia($id_2);
-  
 } else {
   $id_2 = $_POST["id"];
   $incidencia = obtenerIncidencia($id_2);
@@ -68,22 +67,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   @session_start();
   $comentario = $_POST["mensaje"];
-  $cumplido=insertaComentario($comentario, $id_2, date("Y-m-d"), $_SESSION["id"]);
-  if($cumplido==true){
+  $cumplido = insertaComentario($comentario, $id_2, date("Y-m-d"), $_SESSION["id"]);
+  if ($cumplido == true) {
     $user = obtenerUsuarioxId($incidencia["id_usuario"]);
     var_dump($user);
     foreach ($user as $fila) {
-        if ($fila['notificacionEmail'] == 1) {
-            enviandoMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org','aixa_4292', $fila['mail'], "Modificada la incidencia: " . $id2 . " con fecha " . date("Y-m-d"));
-        } else {
-          echo '<script language="javascript">alert("El usuario no desea recibir notificaciones");</script>';
-        }
-    header("Location: logadosView.php");
-  }
+      if ($fila['notificacionEmail'] == 1) {
+        enviandoMensaje('jesus.gonzalez.munoz.al@iespoligonosur.org', 'aixa_4292', $fila['mail'], "Modificada la incidencia: " . $id2 . " con fecha " . date("Y-m-d"));
+      } else {
+        echo '<script language="javascript">alert("El usuario no desea recibir notificaciones");</script>';
+      }
+      header("Location: logadosView.php");
+    }
   } else {
-  echo "no se ha podido completar la peticion";
+    echo "no se ha podido completar la peticion";
   }
-} 
+}
 
 
 
@@ -206,6 +205,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
 
       <div id="breadcrumbs">
+        <a title="cerrar sesion." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesion</a>
+      </div>
+
+      <div id="breadcrumbs">
+
+        <a title="ver listado incidencias." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
+      </div>
+
+      <div id="breadcrumbs">
 
         <a title="ver listado incidencias." href="logadosView.php" class="home">Volver a tu perfil</a>
 
@@ -256,9 +264,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2 class="dc-mega">Inserta tu comentario de la incidencia <?php echo $id_2 ?> </h2>
 
         <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="POST">
-        <input type="hidden" name="id" value="<?php echo $id_2; ?>">
+          <input type="hidden" name="id" value="<?php echo $id_2; ?>">
           <div class="form-group">
-            <label for="validationMensaje">edita comentario:<span class="red">*</span></label>
+            <label for="validationMensaje">inserta comentario:<span class="red">*</span></label>
             <textarea class="form-control" id="mensaje" name="mensaje" rows="2" min="20"></textarea>
           </div>
           <div class="form-group mb-10">

@@ -133,7 +133,7 @@ $error = 'Se ha eliminado al usuario número ' . $id;
             <div id="breadcrumbs">
 
 
-                <a title="cerrar sesión." href="cerrarSesion.php" class="home">Cerrar sesión</a>
+                <a title="cerrar sesión." href="../archivos_generales/cerrarSesion.php" class="home">Cerrar sesión</a>
             </div>
 
             <div id="breadcrumbs">
@@ -144,7 +144,7 @@ $error = 'Se ha eliminado al usuario número ' . $id;
 
             <div id="breadcrumbs">
 
-                <a title="crear incidencia." href="crearIncidencias.php" class="home">Crear incidencia</a>
+                <a title="crear incidencia." href="../archivos_generales/crearIncidencias.php" class="home">Crear incidencia</a>
 
             </div>
 
