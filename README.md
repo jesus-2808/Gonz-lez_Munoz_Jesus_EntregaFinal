@@ -1,7 +1,7 @@
 # Gonz-lez_Munoz_Jesus_EntregaFinal
 
 Aplicación desplegada:
-http://54.167.233.248/
+http://3.88.57.117/Gonz-lez_Munoz_Jesus_EntregaFinal/archivos_generales/
 
 admin
 correo:
